@@ -1,0 +1,56 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "assets/uploads"
+public_folder: "/assets/uploads"
+
+collections:
+  - name: "profil-desa"
+    label: "Profil Desa"
+    description: "Informasi umum tentang desa"
+    folder: "_data"
+    create: false
+    delete: false
+    fields:
+      - { label: "Nama Desa", name: "nama_desa", widget: "string" }
+      - { label: "Visi", name: "visi", widget: "text" }
+      - {
+          label: "Sejarah Lengkap",
+          name: "sejarah_lengkap",
+          widget: "markdown",
+        }
+      - { label: "Foto Kantor", name: "foto_kantor", widget: "image" }
+
+  - name: "aparatur-desa"
+    label: "Aparatur Desa"
+    description: "Data pejabat dan aparatur desa"
+    folder: "_data/aparatur"
+    create: true
+    slug: "{{nama}}"
+    fields:
+      - { label: "Nama", name: "nama", widget: "string" }
+      - { label: "Jabatan", name: "jabatan", widget: "string" }
+      - label: "Foto"
+        name: "foto"
+        widget: "image"
+        media_library:
+          config:
+            multiple: false
+      - label: "Tugas"
+        name: "tugas"
+        widget: "list"
+        fields:
+          - { label: "Poin Tugas", name: "poin-tugas", widget: "string" }
+
+  - name: "berita-pengumuman"
+    label: "Berita dan Pengumuman"
+    description: "Berita terkini dan pengumuman desa"
+    folder: "_posts/berita"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Judul", name: "judul", widget: "string" }
+      - { label: "Tanggal", name: "tanggal", widget: "datetime" }
+      - { label: "Isi Berita", name: "isi_berita", widget: "markdown" }
+      - { label: "Gambar Utama", name: "gambar_utama", widget: "image" }
