@@ -10,14 +10,16 @@ export default function Berita() {
   const [newsData, setNewsData] = useState([]);
   const [filteredNews, setFilteredNews] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     async function getNews() {
       setLoading(true);
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/news`
+          `${
+            process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
+          }/api/news`
         );
         if (!res.ok) {
           throw new Error("Failed to fetch news");
@@ -37,10 +39,13 @@ export default function Berita() {
   }, []);
 
   useEffect(() => {
-    const results = newsData.filter(news =>
-      (news.title?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-      (news.excerpt?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-      (news.category?.toLowerCase() || '').includes(searchTerm.toLowerCase())
+    const results = newsData.filter(
+      (news) =>
+        (news.title?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+        (news.excerpt?.toLowerCase() || "").includes(
+          searchTerm.toLowerCase()
+        ) ||
+        (news.category?.toLowerCase() || "").includes(searchTerm.toLowerCase())
     );
     setFilteredNews(results);
   }, [searchTerm, newsData]);
@@ -83,14 +88,16 @@ export default function Berita() {
       <section className="py-16 lg:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {loading ? (
-             <div className="text-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto"></div>
-                <p className="mt-4 text-gray-500">Memuat berita...</p>
-              </div>
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto"></div>
+              <p className="mt-4 text-gray-500">Memuat berita...</p>
+            </div>
           ) : filteredNews.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-gray-500 text-lg">
-                {searchTerm ? `Tidak ada berita yang cocok dengan "${searchTerm}".` : "Belum ada berita yang tersedia."}
+                {searchTerm
+                  ? `Tidak ada berita yang cocok dengan "${searchTerm}".`
+                  : "Belum ada berita yang tersedia."}
               </p>
             </div>
           ) : (

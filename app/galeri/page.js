@@ -2,11 +2,6 @@ import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import GalleryClient from "../../components/GalleryClient";
 
-export const metadata = {
-  title: "Galeri Desa - Desa Lendang Belo",
-  description: "Koleksi foto dan dokumentasi kegiatan Desa Lendang Belo",
-};
-
 export default function Galeri() {
   return (
     <main className="min-h-screen bg-white">

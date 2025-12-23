@@ -1,5 +1,16 @@
 [
   {
+    "id": 5,
+    "title": "indonesia raya",
+    "excerpt": "merdeka",
+    "content": "tanggal 17 agustus 1945",
+    "image": "/uploads/1766477659850-download.jpg",
+    "date": "23 Desember 2025",
+    "author": "kkn",
+    "category": "nasionalisme",
+    "readTime": "2"
+  },
+  {
     "id": 4,
     "title": "penarikan KKN Bina desa",
     "excerpt": "Mahasiswa Universitas Hamzanwadi",
