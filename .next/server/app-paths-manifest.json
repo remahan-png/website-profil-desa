@@ -1,1 +1,12 @@
-{}
+{
+  "/page": "app/page.js",
+  "/api/site/route": "app/api/site/route.js",
+  "/api/sections/route": "app/api/sections/route.js",
+  "/api/menu/route": "app/api/menu/route.js",
+  "/profil/page": "app/profil/page.js",
+  "/api/news/route": "app/api/news/route.js",
+  "/api/gallery/route": "app/api/gallery/route.js",
+  "/berita/[id]/page": "app/berita/[id]/page.js",
+  "/api/projects/route": "app/api/projects/route.js",
+  "/admin/page": "app/admin/page.js"
+}

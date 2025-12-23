@@ -1,41 +1,57 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
+import Link from "next/link";
 import { Calendar, User, ArrowRight, Search } from "lucide-react";
 
-export const metadata = {
-  title: "Berita Desa - Desa Lendang Belo",
-  description: "Berita terkini dan informasi penting dari Desa Lendang Belo",
-};
+export default function Berita() {
+  const [newsData, setNewsData] = useState([]);
+  const [filteredNews, setFilteredNews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
 
-async function getNews() {
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/news`,
-      {
-        cache: "no-store",
+  useEffect(() => {
+    async function getNews() {
+      setLoading(true);
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/news`
+        );
+        if (!res.ok) {
+          throw new Error("Failed to fetch news");
+        }
+        const data = await res.json();
+        setNewsData(data);
+        setFilteredNews(data);
+      } catch (error) {
+        console.error("Error fetching news:", error);
+        setNewsData([]);
+        setFilteredNews([]);
+      } finally {
+        setLoading(false);
       }
-    );
-    if (!res.ok) {
-      throw new Error("Failed to fetch news");
     }
-    return res.json();
-  } catch (error) {
-    console.error("Error fetching news:", error);
-    return [];
-  }
-}
+    getNews();
+  }, []);
 
-export default async function Berita() {
-  const newsData = await getNews();
+  useEffect(() => {
+    const results = newsData.filter(news =>
+      (news.title?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (news.excerpt?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (news.category?.toLowerCase() || '').includes(searchTerm.toLowerCase())
+    );
+    setFilteredNews(results);
+  }, [searchTerm, newsData]);
 
-  const featuredNews = newsData.length > 0 ? newsData[0] : null;
-  const otherNews = newsData.length > 1 ? newsData.slice(1) : [];
+  const featuredNews = filteredNews.length > 0 ? filteredNews[0] : null;
+  const otherNews = filteredNews.length > 1 ? filteredNews.slice(1) : [];
 
   return (
     <main className="min-h-screen bg-white">
       <Header />
 
-      {/* Hero Section */}
       <section className="bg-gradient-to-br from-red-600 via-red-700 to-red-800 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl sm:text-5xl font-bold mb-4">Berita Desa</h1>
@@ -46,45 +62,39 @@ export default async function Berita() {
         </div>
       </section>
 
-      {/* Search and Filter */}
       <section className="py-8 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-            <div className="relative flex-1 max-w-md">
+            <div className="relative flex-1 max-w-md w-full">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
                 placeholder="Cari berita..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
               />
             </div>
-            <div className="flex gap-2">
-              <button className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200">
-                Semua
-              </button>
-              <button className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-red-600 hover:text-white transition-colors duration-200">
-                Terbaru
-              </button>
-              <button className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-red-600 hover:text-white transition-colors duration-200">
-                Populer
-              </button>
-            </div>
+            {/* Filter buttons are not implemented yet */}
           </div>
         </div>
       </section>
 
-      {/* News Content */}
       <section className="py-16 lg:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {newsData.length === 0 ? (
+          {loading ? (
+             <div className="text-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto"></div>
+                <p className="mt-4 text-gray-500">Memuat berita...</p>
+              </div>
+          ) : filteredNews.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-gray-500 text-lg">
-                Belum ada berita yang tersedia.
+                {searchTerm ? `Tidak ada berita yang cocok dengan "${searchTerm}".` : "Belum ada berita yang tersedia."}
               </p>
             </div>
           ) : (
             <div className="space-y-12">
-              {/* Featured News */}
               {featuredNews && (
                 <div className="grid lg:grid-cols-2 gap-8 items-center">
                   <div className="order-2 lg:order-1">
@@ -120,18 +130,17 @@ export default async function Berita() {
                       </div>
                       <span>{featuredNews.readTime}</span>
                     </div>
-                    <a
+                    <Link
                       href={`/berita/${featuredNews.id}`}
                       className="inline-flex items-center px-6 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors duration-200"
                     >
                       Baca Selengkapnya
                       <ArrowRight className="w-5 h-5 ml-2" />
-                    </a>
+                    </Link>
                   </div>
                 </div>
               )}
 
-              {/* Other News */}
               {otherNews.length > 0 && (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {otherNews.map((item) => (
@@ -168,27 +177,18 @@ export default async function Berita() {
                             <Calendar className="w-4 h-4 mr-1" />
                             <span>{item.date}</span>
                           </div>
-                          <a
+                          <Link
                             href={`/berita/${item.id}`}
                             className="text-red-600 font-semibold hover:text-red-700 transition-colors duration-200"
                           >
                             Baca
-                          </a>
+                          </Link>
                         </div>
                       </div>
                     </article>
                   ))}
                 </div>
               )}
-            </div>
-          )}
-
-          {/* Load More Button */}
-          {newsData.length > 0 && (
-            <div className="text-center mt-12">
-              <button className="bg-red-600 text-white px-8 py-3 rounded-lg hover:bg-red-700 transition-colors duration-200">
-                Muat Lebih Banyak
-              </button>
             </div>
           )}
         </div>

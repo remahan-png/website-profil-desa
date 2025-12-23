@@ -1,0 +1,8 @@
+[
+  { "id": 1, "label": "Beranda", "href": "#beranda" },
+  { "id": 2, "label": "Profil Desa", "href": "#profil" },
+  { "id": 3, "label": "Potensi Desa", "href": "/potensi" },
+  { "id": 4, "label": "Berita", "href": "#berita" },
+  { "id": 5, "label": "Galeri", "href": "#galeri" },
+  { "id": 6, "label": "Kontak", "href": "#kontak" }
+]

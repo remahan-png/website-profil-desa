@@ -1,0 +1,60 @@
+{
+  "profilDeskripsi": "Desa Lendang Belo adalah desa pariwisata\n",
+  "penduduk": "3333",
+  "kk": "750",
+  "pertanian": "85%",
+  "beritaUtama": "Kegiatan Gotong Royong Desa djshsh",
+  "galeriLink": "",
+  "lokasi": "Jl. Utama Desa Lendang Belo...",
+  "wa": "+62 812-34566777772282",
+  "email": "info@lendangbelo.desa.id",
+  "facebookUrl": "#",
+  "instagramUrl": "#",
+  "twitterUrl": "#",
+  "potensiInfrastruktur": "Infrastruktur desa...",
+  "potensiPariwisata": "Pariwisata desa...",
+  "infoGeografis": "Terletak di dataran tinggi, berdampingan dengan sungai dan perbukitan.",
+  "dusun": "7",
+  "luasWilayah": "12 km2",
+  "ketinggian": "350 m",
+  "jalanJembatan": "Paving jalan utama, akses ke dusun, dan perbaikan jembatan kecil.",
+  "airBersih": "Sumur bersama dan jaringan air bersih untuk beberapa RT serta banyaknya penggunaan PDAM",
+  "listrikTelekom": "Layanan listrik tersedia, jaringan seluler dan akses internet serta wifi meningkat",
+  "wisataAlam": "View hamparan sawah terasering, dan pegunungan yang indah.",
+  "kearifanLokal": "Festival budaya  Dare Ngindang",
+  "visi": "Menjadi desa yang maju, mandiri, dan berbudaya dengan masyarakat yang sejahtera dan harmonis",
+  "sejarahDeskripsi": "Desa Lendang Belo memiliki sejarah yang kaya dan panjang. Didirikan pada tahun 2010-an, desa ini awalnya merupakan pemukiman kecil yang dikelilingi oleh perkebunan dan sawah yang subur. Nama \"Lendang Belo\" sendiri berasal dari bahasa daerah yang berarti \"tanah yang subur dan indah\".\n\nSeiring berjalannya waktu, Desa Lendang Belo berkembang menjadi salah satu desa terkemuka di kecamatan Montong Gading. dengan berbagai potensi yang dimiliki. Masyarakat desa yang ramah dan gotong royong yang kuat menjadi ciri khas yang membedakan desa ini dari desa lainnya.",
+  "sejarahMilestones": [],
+  "misiItems": [
+    {
+      "title": "Ekonomi",
+      "description": "Meningkatkan perekonomian masyarakat melalui pengembangan sektor pertanian, pariwisata, dan UMKM"
+    },
+    {
+      "title": "Kesejahteraan Sosial",
+      "description": "Meningkatkan kualitas hidup masyarakat melalui program kesehatan, pendidikan, dan sosial"
+    },
+    {
+      "title": "Inovasi ",
+      "description": "Mengadopsi teknologi modern untuk meningkatkan efisiensi pelayanan dan produktivitas masyarakat"
+    }
+  ],
+  "officials": [
+    {
+      "role": "Kepala Desa",
+      "name": "H. Riadussholihin",
+      "nip": "19751231 199803 1 001"
+    },
+    {
+      "role": "Sekretaris Desa",
+      "name": "Muhammad Kamran, S.Pd",
+      "nip": "19800515 200604 2 002"
+    },
+    {
+      "role": "Bendahara Desa",
+      "name": "Yusmaliadi",
+      "nip": "19821020 200801 1 003"
+    }
+  ],
+  "heroBackgroundImage": "/uploads/1766364016005-view-background.jpg"
+}

@@ -84,3 +84,43 @@ export async function POST(request) {
     );
   }
 }
+
+// PUT /api/news - update existing news
+export async function PUT(request) {
+  try {
+    const body = await request.json();
+    const { id, title, excerpt, content, image, category, author, readTime } = body;
+    const news = readData();
+    const idx = news.findIndex((n) => n.id === id);
+    if (idx === -1) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    news[idx] = {
+      ...news[idx],
+      title: title ?? news[idx].title,
+      excerpt: excerpt ?? news[idx].excerpt,
+      content: content ?? news[idx].content,
+      image: image ?? news[idx].image,
+      category: category ?? news[idx].category,
+      author: author ?? news[idx].author,
+      readTime: readTime ?? news[idx].readTime,
+    };
+    if (writeData(news)) return NextResponse.json(news[idx]);
+    return NextResponse.json({ error: 'Failed to update' }, { status: 500 });
+  } catch (error) {
+    console.error('Error updating news:', error);
+    return NextResponse.json({ error: 'Failed to update news' }, { status: 500 });
+  }
+}
+
+// DELETE /api/news - delete news by id
+export async function DELETE(request) {
+  try {
+    const { id } = await request.json();
+    const news = readData();
+    const filtered = news.filter((n) => n.id !== id);
+    if (writeData(filtered)) return NextResponse.json({ success: true });
+    return NextResponse.json({ error: 'Failed to delete' }, { status: 500 });
+  } catch (error) {
+    console.error('Error deleting news:', error);
+    return NextResponse.json({ error: 'Failed to delete news' }, { status: 500 });
+  }
+}

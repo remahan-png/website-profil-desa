@@ -52,16 +52,13 @@ export async function POST(request) {
 
     const newGalleryItem = {
       id: newId,
-      image: body.image || "",
-      title: body.title || "",
-      category: body.category || "Umum",
+      url: body.url || "",
+      caption: body.caption || "",
       date: new Date().toLocaleDateString("id-ID", {
         year: "numeric",
         month: "long",
         day: "numeric",
       }),
-      location: body.location || "",
-      description: body.description || "",
     };
 
     gallery.unshift(newGalleryItem); // Add to beginning of array
@@ -80,5 +77,40 @@ export async function POST(request) {
       { error: "Failed to create gallery item" },
       { status: 500 }
     );
+  }
+}
+
+// PUT /api/gallery - update existing gallery item
+export async function PUT(request) {
+  try {
+    const body = await request.json();
+    const { id, url, caption } = body;
+    const gallery = readData();
+    const idx = gallery.findIndex((g) => g.id === id);
+    if (idx === -1) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    gallery[idx] = {
+      ...gallery[idx],
+      url: url ?? gallery[idx].url,
+      caption: caption ?? gallery[idx].caption,
+    };
+    if (writeData(gallery)) return NextResponse.json(gallery[idx]);
+    return NextResponse.json({ error: 'Failed to update' }, { status: 500 });
+  } catch (error) {
+    console.error('Error updating gallery:', error);
+    return NextResponse.json({ error: 'Failed to update gallery' }, { status: 500 });
+  }
+}
+
+// DELETE /api/gallery - delete gallery item by id
+export async function DELETE(request) {
+  try {
+    const { id } = await request.json();
+    const gallery = readData();
+    const filtered = gallery.filter((g) => g.id !== id);
+    if (writeData(filtered)) return NextResponse.json({ success: true });
+    return NextResponse.json({ error: 'Failed to delete' }, { status: 500 });
+  } catch (error) {
+    console.error('Error deleting gallery:', error);
+    return NextResponse.json({ error: 'Failed to delete gallery' }, { status: 500 });
   }
 }

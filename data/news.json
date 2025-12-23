@@ -1,10 +1,21 @@
 [
   {
+    "id": 4,
+    "title": "penarikan KKN Bina desa",
+    "excerpt": "Mahasiswa Universitas Hamzanwadi",
+    "content": "jnajnjknajknkjakjaka",
+    "image": "/uploads/1766357505854-WhatsApp-Image-2025-12-20-at-01.04.08--1-.jpeg",
+    "date": "22 Desember 2025",
+    "author": "Admin Desa",
+    "category": "Pendidikan",
+    "readTime": "2 min"
+  },
+  {
     "id": 1,
     "title": "Pelatihan Pertanian Modern untuk Petani Desa",
     "excerpt": "Program pelatihan teknologi pertanian modern berhasil diikuti oleh 50 petani desa. Pelatihan ini mencakup teknik irigasi cerdas dan penggunaan pupuk organik.",
     "content": "Desa Lendang Belo kembali menyelenggarakan program pelatihan pertanian modern yang diikuti oleh 50 petani dari berbagai dusun. Kegiatan yang berlangsung selama 3 hari ini mencakup berbagai materi penting seperti teknik irigasi cerdas, penggunaan pupuk organik, dan manajemen panen yang efisien. Para peserta sangat antusias mengikuti pelatihan ini karena langsung dapat diterapkan di lahan pertanian mereka. Kepala Desa Lendang Belo, H. Ahmad Yani, S.Pd mengatakan bahwa program ini merupakan bagian dari upaya pemerintah desa untuk meningkatkan produktivitas pertanian dan kesejahteraan petani.",
-    "image": "https://images.unsplash.com/photo-1500651230702-0e2d8a49d4ad?w=800&h=400&fit=crop",
+    "image": "/uploads/1766349347846-WhatsApp-Image-2025-12-20-at-01.04.09.jpeg",
     "date": "15 Desember 2024",
     "author": "Admin Desa",
     "category": "Pertanian",
