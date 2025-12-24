@@ -1,6 +1,5 @@
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -15,24 +14,30 @@ export default function Home() {
     lokasi: "Jl. Utama Desa...",
     wa: "0812...",
     email: "info@...",
-    heroBackgroundImage: "url('https://images.unsplash.com/photo-1500651230702-0e2d8a49d4ad?w=1920&h=1080&fit=crop')",
+    heroBackgroundImage:
+      "url('https://images.unsplash.com/photo-1500651230702-0e2d8a49d4ad?w=1920&h=1080&fit=crop')",
   });
 
   useEffect(() => {
     // load site data from server
-    fetch('/api/site')
+    fetch("/api/site")
       .then((r) => r.json())
       .then((d) => {
         if (d && Object.keys(d).length) {
-          setDataDesa((prev) => ({ ...prev, ...{
-            penduduk: d.penduduk || prev.penduduk,
-            kk: d.kk || prev.kk,
-            pertanian: d.pertanian || prev.pertanian,
-            lokasi: d.lokasi || prev.lokasi,
-            wa: d.wa || prev.wa,
-            email: d.email || prev.email,
-            heroBackgroundImage: d.heroBackgroundImage ? `url('${d.heroBackgroundImage}')` : prev.heroBackgroundImage
-          } }));
+          setDataDesa((prev) => ({
+            ...prev,
+            ...{
+              penduduk: d.penduduk || prev.penduduk,
+              kk: d.kk || prev.kk,
+              pertanian: d.pertanian || prev.pertanian,
+              lokasi: d.lokasi || prev.lokasi,
+              wa: d.wa || prev.wa,
+              email: d.email || prev.email,
+              heroBackgroundImage: d.heroBackgroundImage
+                ? `url('${d.heroBackgroundImage}')`
+                : prev.heroBackgroundImage,
+            },
+          }));
         }
       })
       .catch((_) => {});
@@ -40,17 +45,21 @@ export default function Home() {
 
   // menu fetch to sync hero link targets with header/footer
   const [menu, setMenu] = useState([]);
-  const [profilHref, setProfilHref] = useState('/profil');
+  const [profilHref, setProfilHref] = useState("/profil");
 
   useEffect(() => {
-    fetch('/api/menu')
+    fetch("/api/menu")
       .then((r) => r.json())
       .then((d) => {
         const list = Array.isArray(d) ? d : [];
         setMenu(list);
-        const found = list.find((m) => m.label && String(m.label).toLowerCase().includes('profil'));
+        const found = list.find(
+          (m) => m.label && String(m.label).toLowerCase().includes("profil")
+        );
         if (found && found.href) {
-          const resolved = String(found.href).startsWith('#') ? '/profil' : found.href;
+          const resolved = String(found.href).startsWith("#")
+            ? "/profil"
+            : found.href;
           setProfilHref(resolved);
         }
       })
@@ -75,9 +84,9 @@ export default function Home() {
         const galleryData = await galleryResponse.json();
         setGallery(galleryData.slice(0, 6)); // Show only first 6 gallery items
         // Load sections
-        const sectionsResponse = await fetch('/api/sections');
+        const sectionsResponse = await fetch("/api/sections");
         const sections = await sectionsResponse.json();
-        setSectionsData(Array.isArray(sections)?sections:[]);
+        setSectionsData(Array.isArray(sections) ? sections : []);
       } catch (error) {
         console.error("Error loading data:", error);
       } finally {
@@ -89,29 +98,38 @@ export default function Home() {
   }, []);
 
   // listen to storage events so updates from admin tab reflect immediately
-  useEffect(()=>{
-    function handleStorage(e){
-      if(e.key === 'sectionsSync'){
-        fetch('/api/sections').then(r=>r.json()).then(d=>setSectionsData(Array.isArray(d)?d:[])).catch(()=>{});
+  useEffect(() => {
+    function handleStorage(e) {
+      if (e.key === "sectionsSync") {
+        fetch("/api/sections")
+          .then((r) => r.json())
+          .then((d) => setSectionsData(Array.isArray(d) ? d : []))
+          .catch(() => {});
       }
-      if(e.key === 'siteSync'){
-        fetch('/api/site').then(r=>r.json()).then(d=>{
-          if(d && Object.keys(d).length){
-            setDataDesa((prev) => ({ ...prev, ...{
-              penduduk: d.penduduk || prev.penduduk,
-              kk: d.kk || prev.kk,
-              pertanian: d.pertanian || prev.pertanian,
-              lokasi: d.lokasi || prev.lokasi,
-              wa: d.wa || prev.wa,
-              email: d.email || prev.email,
-            } }));
-          }
-        }).catch(()=>{});
+      if (e.key === "siteSync") {
+        fetch("/api/site")
+          .then((r) => r.json())
+          .then((d) => {
+            if (d && Object.keys(d).length) {
+              setDataDesa((prev) => ({
+                ...prev,
+                ...{
+                  penduduk: d.penduduk || prev.penduduk,
+                  kk: d.kk || prev.kk,
+                  pertanian: d.pertanian || prev.pertanian,
+                  lokasi: d.lokasi || prev.lokasi,
+                  wa: d.wa || prev.wa,
+                  email: d.email || prev.email,
+                },
+              }));
+            }
+          })
+          .catch(() => {});
       }
     }
-    window.addEventListener('storage', handleStorage);
-    return ()=>window.removeEventListener('storage', handleStorage);
-  },[]);
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
 
   return (
     <main className="min-h-screen bg-white">
