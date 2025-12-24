@@ -1,70 +1,91 @@
-"use client";
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
-export default function PotensiLive() {
-  const [site, setSite] = useState({});
+const FallbackText = (type) => (
+  <p className="text-sm text-gray-600">
+    Informasi {type} sedang diperbarui.
+  </p>
+);
 
-  async function fetchSite(){
-    try{
-      const res = await fetch('/api/site');
-      if(res.ok){const d = await res.json(); setSite(d || {});}
-    }catch(e){}
-  }
+// Renaming component to Potensi and making it a presentational component
+export default function Potensi({ potensi }) {
+  const data = Array.isArray(potensi) && potensi.length > 0 ? potensi[0] : {};
+  const { 
+    jalanJembatan, 
+    airBersih, 
+    listrikTelekom, 
+    wisataAlam, 
+    kearifanLokal, 
+    title: potensiTitle = "Potensi Desa",
+    subtitle: potensiSubtitle = "Potensi ekonomi, infrastruktur, dan pariwisata desa",
+  } = data;
 
-  useEffect(()=>{
-    fetchSite();
-    function onStorage(e){ if(e.key === 'siteSync') fetchSite(); }
-    window.addEventListener('storage', onStorage);
-    return ()=> window.removeEventListener('storage', onStorage);
-  },[]);
+  const infrastructureItems = [
+    { title: 'Jalan & Jembatan', description: jalanJembatan, fallback: 'Paving jalan utama, akses ke dusun, dan perbaikan jembatan kecil.' },
+    { title: 'Air Bersih', description: airBersih, fallback: 'Sumur bersama dan jaringan air bersih untuk beberapa RT.' },
+    { title: 'Listrik & Telekomunikasi', description: listrikTelekom, fallback: 'Layanan listrik tersedia, jaringan seluler dan akses internet meningkat.' },
+  ];
 
-  const { jalanJembatan, airBersih, listrikTelekom, wisataAlam, kearifanLokal } = site || {};
+  const tourismItems = [
+    { title: 'Wisata Alam', description: wisataAlam, fallback: 'Bukit pandang, sawah terasering, dan jalur trekking yang indah.' },
+    { title: 'Kearifan Lokal', description: kearifanLokal, fallback: 'Festival budaya, kerajinan lokal, dan kuliner tradisional.' },
+  ];
+
+  const hasContent = !!jalanJembatan || !!airBersih || !!listrikTelekom || !!wisataAlam || !!kearifanLokal;
 
   return (
     <>
-      <section id="infrastruktur" className="py-16 lg:py-24">
+      <section id="potensi-desa" className="py-16 lg:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Infrastruktur</h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">Kondisi fasilitas dan pembangunan desa</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">{potensiTitle}</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">{potensiSubtitle}</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white p-6 rounded-xl shadow">
-              <h3 className="font-semibold text-xl mb-2">Jalan & Jembatan</h3>
-              <p className="text-sm text-gray-600">{jalanJembatan || 'Paving jalan utama, akses ke dusun, dan perbaikan jembatan kecil.'}</p>
+          {!hasContent ? (
+            <div className="text-center p-10 bg-gray-100 rounded-xl">
+              <h3 className="text-xl font-semibold text-gray-700">Informasi sedang diperbarui</h3>
+              <p className="text-gray-500 mt-2">Data potensi desa belum tersedia.</p>
             </div>
-            <div className="bg-white p-6 rounded-xl shadow">
-              <h3 className="font-semibold text-xl mb-2">Air Bersih</h3>
-              <p className="text-sm text-gray-600">{airBersih || 'Sumur bersama dan jaringan air bersih untuk beberapa RT.'}</p>
-            </div>
-            <div className="bg-white p-6 rounded-xl shadow">
-              <h3 className="font-semibold text-xl mb-2">Listrik & Telekomunikasi</h3>
-              <p className="text-sm text-gray-600">{listrikTelekom || 'Layanan listrik tersedia, jaringan seluler dan akses internet meningkat.'}</p>
-            </div>
-          </div>
-        </div>
-      </section>
+          ) : (
+            <>
+              {/* Infrastruktur Section */}
+              <div id="infrastruktur" className="mb-16">
+                <h3 className="text-2xl font-bold text-gray-900 mb-8 border-l-4 border-red-600 pl-4">Infrastruktur</h3>
+                <div className="grid md:grid-cols-3 gap-8">
+                  {infrastructureItems.map((item, index) => (
+                    <div key={index} className="bg-white p-6 rounded-xl shadow">
+                      <h4 className="font-semibold text-xl mb-2">{item.title}</h4>
+                      {item.description ? (
+                        <p className="text-sm text-gray-600">{item.description}</p>
+                      ) : (
+                        FallbackText(item.title)
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
 
-      <section id="pariwisata" className="py-16 lg:py-24 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Pariwisata</h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">Objek wisata dan potensi ekonomi kreatif di desa</p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-white p-6 rounded-xl shadow">
-              <h3 className="font-semibold text-xl mb-2">Wisata Alam</h3>
-              <p className="text-sm text-gray-600">{wisataAlam || 'Bukit pandang, sawah terasering, dan jalur trekking yang indah.'}</p>
-            </div>
-            <div className="bg-white p-6 rounded-xl shadow">
-              <h3 className="font-semibold text-xl mb-2">Kearifan Lokal</h3>
-              <p className="text-sm text-gray-600">{kearifanLokal || 'Festival budaya, kerajinan lokal, dan kuliner tradisional.'}</p>
-            </div>
-          </div>
+              {/* Pariwisata Section */}
+              <div id="pariwisata">
+                <h3 className="text-2xl font-bold text-gray-900 mb-8 border-l-4 border-red-600 pl-4">Pariwisata & Kearifan Lokal</h3>
+                <div className="grid md:grid-cols-2 gap-8">
+                  {tourismItems.map((item, index) => (
+                    <div key={index} className="bg-white p-6 rounded-xl shadow">
+                      <h4 className="font-semibold text-xl mb-2">{item.title}</h4>
+                      {item.description ? (
+                        <p className="text-sm text-gray-600">{item.description}</p>
+                      ) : (
+                        FallbackText(item.title)
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </section>
     </>
   );
 }
+
