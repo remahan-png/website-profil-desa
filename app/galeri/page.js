@@ -1,8 +1,22 @@
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import GalleryClient from "../../components/GalleryClient";
+import { supabase } from "../../lib/supabase";
 
-export default function Galeri() {
+export const dynamic = "force-dynamic";
+
+export default async function Galeri() {
+  // Ambil data gallery
+  const { data: galleryData, error: galleryError } = await supabase
+    .from('gallery')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (galleryError) console.error("Error fetching gallery:", galleryError);
+
+  // Variabel penampung
+  const dataGallery = galleryData || [];
+
   return (
     <main className="min-h-screen bg-white">
       <Header />
@@ -16,7 +30,8 @@ export default function Galeri() {
         </div>
       </section>
 
-      <GalleryClient />
+      {/* Memberikan data ke GalleryClient */}
+      <GalleryClient dataGallery={dataGallery} />
 
       <Footer />
     </main>

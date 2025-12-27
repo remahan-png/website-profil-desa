@@ -1,177 +1,91 @@
-"use client";
+import Link from 'next/link';
+import Image from 'next/image';
+import Header from '../../../components/Header';
+import Footer from '../../../components/Footer';
+import { supabase } from '../../../lib/supabase';
 
-import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
-import Header from "../../../components/Header";
-import Footer from "../../../components/Footer";
+export const dynamic = "force-dynamic";
 
-export default function NewsDetail() {
-  const [news, setNews] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const params = useParams();
-  const router = useRouter();
+export default async function BeritaDetailPage({ params }) {
+  const { id } = params;
 
-  useEffect(() => {
-    const loadNews = async () => {
-      try {
-        const response = await fetch("/api/news");
-        const allNews = await response.json();
-        const newsItem = allNews.find(
-          (item) => item.id === parseInt(params.id)
-        );
+  const { data: newsItem, error } = await supabase
+    .from('news')
+    .select('*')
+    .eq('id', id)
+    .single();
 
-        if (newsItem) {
-          setNews(newsItem);
-        } else {
-          setError("Berita tidak ditemukan");
-        }
-      } catch (err) {
-        console.error("Error loading news:", err);
-        setError("Gagal memuat berita");
-      } finally {
-        setLoading(false);
-      }
-    };
+  if (error) console.error("Error fetching news item:", error);
 
-    if (params.id) {
-      loadNews();
-    }
-  }, [params.id]);
-
-  if (loading) {
+  if (!newsItem) {
     return (
-      <main className="min-h-screen bg-gray-50">
+      <main className="min-h-screen bg-gray-50 pt-16">
         <Header />
-        <div className="flex items-center justify-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+        <div className="max-w-4xl mx-auto py-20 text-center">
+          <h1 className="text-3xl font-bold text-gray-900">Berita Tidak Ditemukan</h1>
+          <p className="mt-4 text-gray-600">ID: {id}</p>
+          <Link href="/berita" className="mt-6 inline-block bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition">
+            Kembali ke Daftar Berita
+          </Link>
         </div>
         <Footer />
       </main>
     );
   }
 
-  if (error || !news) {
-    return (
-      <main className="min-h-screen bg-gray-50">
-        <Header />
-
-        {/* Hero Section */}
-        <section className="relative bg-gradient-to-r from-red-600 to-red-700 text-white py-20">
-          <div className="absolute inset-0 bg-black opacity-50"></div>
-          <div className="relative container mx-auto px-4 text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">
-              Berita Tidak Ditemukan
-            </h1>
-            <p className="text-xl md:text-2xl mb-8">
-              Maaf, berita yang Anda cari tidak tersedia.
-            </p>
-            <Link
-              href="/berita"
-              className="inline-block bg-white text-red-600 font-semibold py-3 px-8 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              Kembali ke Berita
-            </Link>
-          </div>
-        </section>
-
-        <Footer />
-      </main>
-    );
-  }
+  // Variabel penampung dataBerita
+  const dataBerita = newsItem;
+  const formattedDate = new Date(dataBerita.created_at).toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  const category = dataBerita.category || "Umum";
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-gray-50 pt-16">
       <Header />
+      <article className="max-w-4xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
+        {/* Breadcrumb */}
+        <nav className="text-sm mb-6">
+          <Link href="/berita" className="text-red-600 hover:text-red-800">
+            Berita Desa
+          </Link>
+          <span className="mx-2 text-gray-400">/</span>
+          <span className="text-gray-500">{dataBerita.title}</span>
+        </nav>
 
-      {/* Hero Section */}
-      <section
-        className="relative bg-gradient-to-r from-green-600 to-blue-600 text-white py-32"
-        style={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url("${
-            news.image || "https://via.placeholder.com/1200x400?text=Berita"
-          }")`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="absolute inset-0 bg-black opacity-40"></div>
-        <div className="relative container mx-auto px-4 text-center">
-          <div className="mb-4">
-            <span className="inline-block bg-red-600 text-white px-4 py-2 rounded-full text-sm font-semibold">
-              {news.category || "Berita"}
-            </span>
-          </div>
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight">
-            {news.title}
+        {/* Header */}
+        <header className="mb-10">
+          <span className="inline-block bg-red-100 text-red-600 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-3">
+            {category}
+          </span>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight mb-4">
+            {dataBerita.title}
           </h1>
-          <div className="flex items-center justify-center space-x-6 text-lg opacity-90">
-            <span>{news.date}</span>
-            <span>•</span>
-            <span>{news.readTime || "3 menit"}</span>
-            <span>•</span>
-            <span>{news.author || "Admin Desa"}</span>
+          <p className="text-gray-500 text-sm">
+            Diposting pada <time dateTime={dataBerita.created_at}>{formattedDate}</time>
+          </p>
+        </header>
+
+        {/* Featured Image */}
+        {dataBerita.image && (
+          <div className="relative w-full h-96 mb-10 rounded-xl overflow-hidden shadow-xl">
+            <Image
+              src={dataBerita.image}
+              alt={dataBerita.title}
+              fill
+              style={{ objectFit: 'cover' }}
+              priority
+            />
           </div>
-        </div>
-      </section>
+        )}
 
-      {/* Breadcrumb */}
-      <div className="bg-white border-b">
-        <div className="container mx-auto px-4 py-4">
-          <nav className="flex items-center space-x-2 text-sm">
-            <Link
-              href="/"
-              className="text-gray-600 hover:text-red-600 transition-colors"
-            >
-              Beranda
-            </Link>
-            <span className="text-gray-400">/</span>
-            <Link
-              href="/berita"
-              className="text-gray-600 hover:text-red-600 transition-colors"
-            >
-              Berita
-            </Link>
-            <span className="text-gray-400">/</span>
-            <span className="text-gray-900 font-medium">{news.title}</span>
-          </nav>
-        </div>
-      </div>
-
-      {/* Content */}
-      <article className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white rounded-xl shadow-lg p-8 md:p-12">
-              <div className="prose prose-lg max-w-none">
-                <p className="text-xl text-gray-600 leading-relaxed mb-8 first-letter:text-6xl first-letter:font-bold first-letter:text-red-600 first-letter:mr-2 first-letter:float-left">
-                  {news.content}
-                </p>
-              </div>
-
-              {/* Share Section */}
-              <div className="mt-12 pt-8 border-t border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Bagikan Berita Ini
-                </h3>
-                <div className="flex space-x-4">
-                  <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                    Facebook
-                  </button>
-                  <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
-                    WhatsApp
-                  </button>
-                  <button className="bg-blue-400 text-white px-4 py-2 rounded-lg hover:bg-blue-500 transition-colors">
-                    Twitter
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+        {/* Content */}
+        <div className="prose prose-lg max-w-none">
+          <p>{dataBerita.content}</p>
         </div>
       </article>
-
       <Footer />
     </main>
   );

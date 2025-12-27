@@ -1,13 +1,27 @@
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import PotensiLive from "../../components/PotensiLive";
+import { supabase } from "../../lib/supabase";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Potensi Desa - Desa Lendang Belo",
   description: "Potensi infrastruktur dan pariwisata Desa Lendang Belo",
 };
 
-export default function Potensi() {
+export default async function Potensi() {
+  // Ambil data potensi
+  const { data: potensiData, error: potensiError } = await supabase
+    .from('potensi')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (potensiError) console.error("Error fetching potensi:", potensiError);
+
+  // Variabel penampung
+  const dataPotensi = potensiData || [];
+
   return (
     <main className="min-h-screen bg-white pt-16">
       <Header />
@@ -21,7 +35,8 @@ export default function Potensi() {
         </div>
       </section>
 
-      <PotensiLive />
+      {/* Memberikan data ke PotensiLive */}
+      <PotensiLive dataPotensi={dataPotensi} />
 
       <Footer />
     </main>

@@ -1,21 +1,26 @@
-export const dynamic = "force-dynamic";
-
 import Link from "next/link";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Sejarah from "../components/Sejarah";
 import { supabase } from "../lib/supabase";
+import Hero from "../components/Hero";
+import ProfileLive from "../components/ProfileLive";
+import PotensiLive from "../components/PotensiLive";
+import Stats from "../components/Stats";
+import NewsComponent from "../components/News";
+import GalleryClient from "../components/GalleryClient";
+import Contact from "../components/Contact";
+
+
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const loading = finalLoading; // Gunakan finalLoading (false) untuk loading status
   const profilHref = "/profil";
 
-  // ... (Sisa kode fetch Supabase)
-
-  // ... (Sisa kode return)
+  // 1. Ambil data profil_desa
   const { data: desaData, error: desaError } = await supabase
     .from("profil_desa")
-    .select("penduduk, kk, pertanian, hero_image")
+    .select("*")
     .single();
 
   if (desaError) {
@@ -45,15 +50,28 @@ export default async function Home() {
     console.error("Error fetching gallery:", galleryError);
   }
 
+  // Variabel penampung dataDesa
   const dataDesa = {
+    // Data Stats & Hero (sesuai yang digunakan di JSX)
     penduduk: desaData?.penduduk || "2.500",
     kk: desaData?.kk || "750",
     pertanian: desaData?.pertanian || "85%",
     heroBackgroundImage: desaData?.hero_image
       ? `url('${desaData.hero_image}')`
       : "url('https://images.unsplash.com/photo-1500651230702-0e2d8a49d4ad?w=1920&h=1080&fit=crop')",
+    // Variabel lain yang mungkin diperlukan di komponen yang di-import
+    title: desaData?.title || 'Selamat Datang di',
+    tagline: desaData?.tagline || 'Desa Lendang Belo',
+    description: desaData?.description || 'Desa yang harmonis, maju, dan berbudaya dengan potensi pertanian dan pariwisata yang melimpah',
+    visi: desaData?.visi || '',
+    misi: desaData?.misi || [],
+    sejarah: desaData?.sejarah || '',
+    stats: desaData?.stats || {},
+    kontak: desaData?.kontak || {},
+    alamat: desaData?.alamat || 'Lokasi Kantor Desa',
   };
 
+  // Variabel penampung news
   const news =
     newsData?.map((item) => ({
       id: item.id,
@@ -68,6 +86,7 @@ export default async function Home() {
       image: item.image,
     })) || [];
 
+  // Variabel penampung gallery
   const gallery =
     galleryData?.map((item) => ({
       id: item.id,
@@ -80,11 +99,10 @@ export default async function Home() {
       }),
     })) || [];
 
-  // Variabel loading disetel ke false setelah semua data diambil
+  // Variabel loading (dibuat agar bagian return yang menggunakan {loading ? ... : ...} tidak error)
   const finalLoading = false;
-  // Variabel profilHref disetel ke "/profil" (sudah di atas)
-  // Tidak ada lagi sectionsData (diasumsikan sudah tidak dipakai di bagian return, hanya dihapus dari state sebelumnya)
-  // Namun, karena bagian return tidak boleh diubah, saya akan memastikan variabel news dan gallery tetap tersedia.
+  const loading = finalLoading;
+  
 
   return (
     <main className="min-h-screen bg-white">
@@ -326,6 +344,7 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
       <section id="peta" className="py-20 px-10 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-10">
@@ -347,6 +366,7 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
       {/* Call to Action Section */}
       <section className="py-20 bg-gradient-to-r from-red-600 to-red-700">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
