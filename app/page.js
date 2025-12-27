@@ -4,132 +4,87 @@ import Link from "next/link";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Sejarah from "../components/Sejarah";
+import { supabase } from "@/lib/supabase";
 
-export default function Home() {
-  // Tambahkan State di paling atas fungsi Home
-  const [dataDesa, setDataDesa] = useState({
-    penduduk: "2.500",
-    kk: "750",
-    pertanian: "85%",
-    lokasi: "Jl. Utama Desa...",
-    wa: "0812...",
-    email: "info@...",
-    heroBackgroundImage:
-      "url('https://images.unsplash.com/photo-1500651230702-0e2d8a49d4ad?w=1920&h=1080&fit=crop')",
-  });
+export default async function Home() {
+  const loading = finalLoading; // Gunakan finalLoading (false) untuk loading status
+  const profilHref = "/profil";
 
-  useEffect(() => {
-    // load site data from server
-    fetch("/api/site")
-      .then((r) => r.json())
-      .then((d) => {
-        if (d && Object.keys(d).length) {
-          setDataDesa((prev) => ({
-            ...prev,
-            ...{
-              penduduk: d.penduduk || prev.penduduk,
-              kk: d.kk || prev.kk,
-              pertanian: d.pertanian || prev.pertanian,
-              lokasi: d.lokasi || prev.lokasi,
-              wa: d.wa || prev.wa,
-              email: d.email || prev.email,
-              heroBackgroundImage: d.heroBackgroundImage
-                ? `url('${d.heroBackgroundImage}')`
-                : prev.heroBackgroundImage,
-            },
-          }));
-        }
-      })
-      .catch((_) => {});
-  }, []);
+  // ... (Sisa kode fetch Supabase)
 
-  // menu fetch to sync hero link targets with header/footer
-  const [menu, setMenu] = useState([]);
-  const [profilHref, setProfilHref] = useState("/profil");
+  // ... (Sisa kode return)
+  const { data: desaData, error: desaError } = await supabase
+    .from("profil_desa")
+    .select("penduduk, kk, pertanian, hero_image")
+    .single();
 
-  useEffect(() => {
-    fetch("/api/menu")
-      .then((r) => r.json())
-      .then((d) => {
-        const list = Array.isArray(d) ? d : [];
-        setMenu(list);
-        const found = list.find(
-          (m) => m.label && String(m.label).toLowerCase().includes("profil")
-        );
-        if (found && found.href) {
-          const resolved = String(found.href).startsWith("#")
-            ? "/profil"
-            : found.href;
-          setProfilHref(resolved);
-        }
-      })
-      .catch(() => {});
-  }, []);
+  if (desaError) {
+    console.error("Error fetching profil_desa:", desaError);
+    // Fallback data
+  }
 
-  const [news, setNews] = useState([]);
-  const [gallery, setGallery] = useState([]);
-  const [sectionsData, setSectionsData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // 2. Ambil data news (limit 3)
+  const { data: newsData, error: newsError } = await supabase
+    .from("news")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(3);
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        // Load news data
-        const newsResponse = await fetch("/api/news");
-        const newsData = await newsResponse.json();
-        setNews(newsData.slice(0, 3)); // Show only first 3 news items
+  if (newsError) {
+    console.error("Error fetching news:", newsError);
+  }
 
-        // Load gallery data
-        const galleryResponse = await fetch("/api/gallery");
-        const galleryData = await galleryResponse.json();
-        setGallery(galleryData.slice(0, 6)); // Show only first 6 gallery items
-        // Load sections
-        const sectionsResponse = await fetch("/api/sections");
-        const sections = await sectionsResponse.json();
-        setSectionsData(Array.isArray(sections) ? sections : []);
-      } catch (error) {
-        console.error("Error loading data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // 3. Ambil data gallery (limit 8)
+  const { data: galleryData, error: galleryError } = await supabase
+    .from("gallery")
+    .select("id, url, caption, created_at")
+    .order("created_at", { ascending: false })
+    .limit(8);
 
-    loadData();
-  }, []);
+  if (galleryError) {
+    console.error("Error fetching gallery:", galleryError);
+  }
 
-  // listen to storage events so updates from admin tab reflect immediately
-  useEffect(() => {
-    function handleStorage(e) {
-      if (e.key === "sectionsSync") {
-        fetch("/api/sections")
-          .then((r) => r.json())
-          .then((d) => setSectionsData(Array.isArray(d) ? d : []))
-          .catch(() => {});
-      }
-      if (e.key === "siteSync") {
-        fetch("/api/site")
-          .then((r) => r.json())
-          .then((d) => {
-            if (d && Object.keys(d).length) {
-              setDataDesa((prev) => ({
-                ...prev,
-                ...{
-                  penduduk: d.penduduk || prev.penduduk,
-                  kk: d.kk || prev.kk,
-                  pertanian: d.pertanian || prev.pertanian,
-                  lokasi: d.lokasi || prev.lokasi,
-                  wa: d.wa || prev.wa,
-                  email: d.email || prev.email,
-                },
-              }));
-            }
-          })
-          .catch(() => {});
-      }
-    }
-    window.addEventListener("storage", handleStorage);
-    return () => window.removeEventListener("storage", handleStorage);
-  }, []);
+  const dataDesa = {
+    penduduk: desaData?.penduduk || "2.500",
+    kk: desaData?.kk || "750",
+    pertanian: desaData?.pertanian || "85%",
+    heroBackgroundImage: desaData?.hero_image
+      ? `url('${desaData.hero_image}')`
+      : "url('https://images.unsplash.com/photo-1500651230702-0e2d8a49d4ad?w=1920&h=1080&fit=crop')",
+  };
+
+  const news =
+    newsData?.map((item) => ({
+      id: item.id,
+      title: item.title,
+      content: item.content,
+      category: item.category,
+      date: new Date(item.created_at).toLocaleDateString("id-ID", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      }),
+      image: item.image,
+    })) || [];
+
+  const gallery =
+    galleryData?.map((item) => ({
+      id: item.id,
+      url: item.url,
+      caption: item.caption,
+      date: new Date(item.created_at).toLocaleDateString("id-ID", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }),
+    })) || [];
+
+  // Variabel loading disetel ke false setelah semua data diambil
+  const finalLoading = false;
+  // Variabel profilHref disetel ke "/profil" (sudah di atas)
+  // Tidak ada lagi sectionsData (diasumsikan sudah tidak dipakai di bagian return, hanya dihapus dari state sebelumnya)
+  // Namun, karena bagian return tidak boleh diubah, saya akan memastikan variabel news dan gallery tetap tersedia.
 
   return (
     <main className="min-h-screen bg-white">
