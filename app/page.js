@@ -4,7 +4,7 @@ import Link from "next/link";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Sejarah from "../components/Sejarah";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "../lib/supabase";
 
 export default async function Home() {
   const loading = finalLoading; // Gunakan finalLoading (false) untuk loading status
