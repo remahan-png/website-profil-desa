@@ -3,13 +3,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Sejarah from "../components/Sejarah";
 import { supabase } from "../lib/supabase";
-import Hero from "../components/Hero";
-import ProfileLive from "../components/ProfileLive";
-import PotensiLive from "../components/PotensiLive";
-import Stats from "../components/Stats";
-import NewsComponent from "../components/News";
 import GalleryClient from "../components/GalleryClient";
-import Contact from "../components/Contact";
 
 
 export const dynamic = "force-dynamic";
