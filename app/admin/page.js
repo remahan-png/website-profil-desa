@@ -197,7 +197,7 @@ export default function Admin() {
       {/* SIDEBAR - SEMUA MENU ADA DI SINI */}
       <aside className="w-80 bg-[#111C44] p-8 text-white flex flex-col h-screen sticky top-0">
         <h2 className="text-xl font-black italic text-red-600 mb-10 uppercase">Panel Kontrol</h2>
-        <nav className="flex-1 space-y-2 text-[10px] font-black uppercase tracking-widest">
+        <nav className="flex-1 space-y-2 text-[10px] font-black uppercase tracking-widest overflow-y-auto pr-2 custom-scrollbar">
           <button onClick={() => setActiveTab('beranda')} className={`w-full text-left p-4 rounded-xl transition ${activeTab === 'beranda' ? 'bg-red-600' : 'hover:bg-white/5'}`}>Kelola Beranda</button>
           <button onClick={() => setActiveTab('profil')} className={`w-full text-left p-4 rounded-xl transition ${activeTab === 'profil' ? 'bg-red-600' : 'hover:bg-white/5'}`}>Kelola Profil Desa</button>
           <button onClick={() => setActiveTab('potensi')} className={`w-full text-left p-4 rounded-xl transition ${activeTab === 'potensi' ? 'bg-red-600' : 'hover:bg-white/5'}`}>Kelola Potensi Desa</button>
@@ -206,6 +206,9 @@ export default function Admin() {
           <button onClick={() => setActiveTab('galeri')} className={`w-full text-left p-4 rounded-xl transition ${activeTab === 'galeri' ? 'bg-red-600' : 'hover:bg-white/5'}`}>Kelola Galeri</button>
           <button onClick={() => setActiveTab('kontak')} className={`w-full text-left p-4 rounded-xl transition ${activeTab === 'kontak' ? 'bg-red-600' : 'hover:bg-white/5'}`}>Kelola Kontak</button>
           <button onClick={() => setActiveTab('sejarah')} className={`w-full text-left p-4 rounded-xl transition ${activeTab === 'sejarah' ? 'bg-red-600' : 'hover:bg-white/5'}`}>Kelola Sejarah</button>
+          <button onClick={() => setActiveTab('menu')} className={`w-full text-left p-4 rounded-xl transition ${activeTab === 'menu' ? 'bg-red-600' : 'hover:bg-white/5'}`}>Kelola Menu Link</button>
+          <button onClick={() => setActiveTab('projek')} className={`w-full text-left p-4 rounded-xl transition ${activeTab === 'projek' ? 'bg-red-600' : 'hover:bg-white/5'}`}>Kelola Projek</button>
+          <button onClick={() => setActiveTab('sections')} className={`w-full text-left p-4 rounded-xl transition ${activeTab === 'sections' ? 'bg-red-600' : 'hover:bg-white/5'}`}>Kelola Halaman Statis</button>
         </nav>
         <Link href="/" className="mt-4 border-2 border-white text-white p-4 rounded-2xl font-black italic uppercase text-[10px] hover:bg-white hover:text-[#111C44] transition text-center block">Kembali ke Website</Link>
         <button onClick={handleLogout} className="mt-4 border-2 border-red-600 text-red-600 p-4 rounded-2xl font-black italic uppercase text-[10px] hover:bg-red-600 hover:text-white transition">Logout & Keluar</button>
