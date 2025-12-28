@@ -84,6 +84,31 @@ export default function Admin() {
   
   const [newHeroBgFile, setNewHeroBgFile] = useState(null);
 
+  // Menu Link states
+  const [newMenuLabel, setNewMenuLabel] = useState('');
+  const [newMenuHref, setNewMenuHref] = useState('');
+  const [editingMenuId, setEditingMenuId] = useState(null);
+  const [editMenuLabel, setEditMenuLabel] = useState('');
+  const [editMenuHref, setEditMenuHref] = useState('');
+
+  // Project states
+  const [newProjectTitle, setNewProjectTitle] = useState('');
+  const [newProjectDesc, setNewProjectDesc] = useState('');
+  const [newProjectFile, setNewProjectFile] = useState(null);
+  const [editingProjectId, setEditingProjectId] = useState(null);
+  const [editProjectTitle, setEditProjectTitle] = useState('');
+  const [editProjectDesc, setEditProjectDesc] = useState('');
+  const [editProjectImage, setEditProjectImage] = useState('');
+  const [editProjectFile, setEditProjectFile] = useState(null);
+
+  // Section states
+  const [newSectionTitle, setNewSectionTitle] = useState('');
+  const [newSectionType, setNewSectionType] = useState('text');
+  const [newSectionContent, setNewSectionContent] = useState('');
+  const [editingSectionId, setEditingSectionId] = useState(null);
+  const [editSectionTitle, setEditSectionTitle] = useState('');
+  const [editSectionContent, setEditSectionContent] = useState('');
+
 
   useEffect(() => {
     // load saved form data from server
@@ -646,29 +671,185 @@ export default function Admin() {
               </ul>
             </div>
           )}
-          
-          {/* Menu, Project, Section Management ... (Dilewatkan sesuai instruksi pengguna, hanya fokus pada News, Galeri, Profil) */}
-          
+
           {activeTab === 'menu' && (
-            <div>
-              {/* Menu Management JSX */}
-              {/* Kode Menu Management dari file lama, biarkan saja */}
+            <div className="grid gap-4">
+              <h3 className="font-bold">Tambah Menu Navigasi</h3>
+              <div className="grid md:grid-cols-2 gap-2">
+                <input value={newMenuLabel} onChange={e=>setNewMenuLabel(e.target.value)} placeholder="Label Menu (mis. Berita)" className="p-3 border rounded" />
+                <input value={newMenuHref} onChange={e=>setNewMenuHref(e.target.value)} placeholder="Link (mis. /berita atau #berita)" className="p-3 border rounded" />
+              </div>
+              <button onClick={async ()=>{
+                const res = await fetch('/api/menu',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({label:newMenuLabel, href:newMenuHref})});
+                if(res.ok){
+                  const d = await res.json(); setMenuItems(p=>[...p, d]);
+                  setNewMenuLabel(''); setNewMenuHref('');
+                  try{localStorage.setItem('menuSync', Date.now().toString());}catch(e){}
+                  alert('Menu ditambahkan');
+                }
+              }} className="bg-red-600 text-white p-3 rounded w-fit">Tambah Menu</button>
+
+              <h3 className="font-bold mt-6">Daftar Menu</h3>
+              <ul className="space-y-2">
+                {menuItems.map(m=>(
+                  <li key={m.id} className="p-3 border rounded flex justify-between items-center text-sm">
+                    {editingMenuId === m.id ? (
+                      <div className="flex gap-2 flex-1">
+                        <input value={editMenuLabel} onChange={e=>setEditMenuLabel(e.target.value)} className="p-1 border rounded flex-1" />
+                        <input value={editMenuHref} onChange={e=>setEditMenuHref(e.target.value)} className="p-1 border rounded flex-1" />
+                        <button onClick={async ()=>{
+                          const res = await fetch('/api/menu',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:m.id, label:editMenuLabel, href:editMenuHref})});
+                          if(res.ok){
+                            const upd = await res.json(); setMenuItems(p=>p.map(x=>x.id===upd.id?upd:x));
+                            setEditingMenuId(null);
+                            try{localStorage.setItem('menuSync', Date.now().toString());}catch(e){}
+                          }
+                        }} className="text-green-600">Simpan</button>
+                      </div>
+                    ) : (
+                      <>
+                        <span>{m.label} <span className="text-gray-400">({m.href})</span></span>
+                        <div className="flex gap-3">
+                          <button onClick={()=>{setEditingMenuId(m.id); setEditMenuLabel(m.label); setEditMenuHref(m.href);}} className="text-blue-600 font-bold uppercase text-[10px]">Edit</button>
+                          <button onClick={async ()=>{
+                            if(confirm('Hapus menu?')){
+                              await fetch('/api/menu',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:m.id})});
+                              setMenuItems(p=>p.filter(x=>x.id!==m.id));
+                              try{localStorage.setItem('menuSync', Date.now().toString());}catch(e){}
+                            }
+                          }} className="text-red-600 font-bold uppercase text-[10px]">Hapus</button>
+                        </div>
+                      </>
+                    )}
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
 
           {activeTab === 'projek' && (
-            <div>
-              {/* Project Management JSX */}
-              {/* Kode Project Management dari file lama, biarkan saja */}
+            <div className="grid gap-4">
+              <h3 className="font-bold">Tambah Projek Desa</h3>
+              <input value={newProjectTitle} onChange={e=>setNewProjectTitle(e.target.value)} placeholder="Nama Projek" className="p-3 border rounded" />
+              <textarea value={newProjectDesc} onChange={e=>setNewProjectDesc(e.target.value)} placeholder="Deskripsi Projek" className="p-3 border rounded" rows="3" />
+              <div>
+                <label className="block text-sm font-medium mb-1">Gambar Projek</label>
+                <input type="file" accept="image/*" onChange={e=>setNewProjectFile(e.target.files[0])} className="p-2" />
+              </div>
+              <button onClick={async ()=>{
+                let image = '';
+                if(newProjectFile){
+                  const fd = new FormData(); fd.append('file', newProjectFile);
+                  const up = await fetch('/api/upload',{method:'POST',body:fd});
+                  if(up.ok){ const j = await up.json(); image = j.url; }
+                }
+                const res = await fetch('/api/projects',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:newProjectTitle, description:newProjectDesc, image})});
+                if(res.ok){
+                  const d = await res.json(); setProjects(p=>[...p, d]);
+                  setNewProjectTitle(''); setNewProjectDesc(''); setNewProjectFile(null);
+                  try{localStorage.setItem('projectsSync', Date.now().toString());}catch(e){}
+                  alert('Projek ditambahkan');
+                }
+              }} className="bg-red-600 text-white p-3 rounded w-fit">Tambah Projek</button>
+
+              <h3 className="font-bold mt-6">Daftar Projek</h3>
+              <div className="grid gap-4">
+                {projects.map(p=>(
+                  <div key={p.id} className="p-4 border rounded flex gap-4">
+                    {p.image && <img src={p.image} className="w-24 h-24 object-cover rounded" />}
+                    <div className="flex-1">
+                      {editingProjectId === p.id ? (
+                        <div className="grid gap-2">
+                          <input value={editProjectTitle} onChange={e=>setEditProjectTitle(e.target.value)} className="p-2 border rounded" />
+                          <textarea value={editProjectDesc} onChange={e=>setEditProjectDesc(e.target.value)} className="p-2 border rounded" />
+                          <button onClick={async ()=>{
+                            const res = await fetch('/api/projects',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:p.id, title:editProjectTitle, description:editProjectDesc, image:p.image})});
+                            if(res.ok){
+                              const upd = await res.json(); setProjects(p=>p.map(x=>x.id===upd.id?upd:x));
+                              setEditingProjectId(null);
+                              try{localStorage.setItem('projectsSync', Date.now().toString());}catch(e){}
+                            }
+                          }} className="text-green-600 w-fit">Simpan</button>
+                        </div>
+                      ) : (
+                        <>
+                          <h4 className="font-bold">{p.title}</h4>
+                          <p className="text-sm text-gray-600 mb-2">{p.description}</p>
+                          <div className="flex gap-4">
+                            <button onClick={()=>{setEditingProjectId(p.id); setEditProjectTitle(p.title); setEditProjectDesc(p.description);}} className="text-blue-600 text-xs font-bold">EDIT</button>
+                            <button onClick={async ()=>{
+                              if(confirm('Hapus projek?')){
+                                await fetch('/api/projects', {method:'DELETE', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id:p.id})});
+                                setProjects(prev=>prev.filter(x=>x.id!==p.id));
+                                try{localStorage.setItem('projectsSync', Date.now().toString());}catch(e){}
+                              }
+                            }} className="text-red-600 text-xs font-bold">HAPUS</button>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
           {activeTab === 'sections' && (
-            <div>
-              {/* Sections Management JSX */}
-              {/* Kode Sections Management dari file lama, biarkan saja */}
+            <div className="grid gap-4">
+              <h3 className="font-bold">Tambah Halaman Statis / Section</h3>
+              <input value={newSectionTitle} onChange={e=>setNewSectionTitle(e.target.value)} placeholder="Judul Halaman (mis. Layanan Publik)" className="p-3 border rounded" />
+              <textarea value={newSectionContent} onChange={e=>setNewSectionContent(e.target.value)} placeholder="Konten Halaman (Format HTML/Teks)" className="p-3 border rounded" rows="8" />
+              <button onClick={async ()=>{
+                const res = await fetch('/api/sections',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:newSectionTitle, content:newSectionContent, type:'text'})});
+                if(res.ok){
+                  const d = await res.json(); setSections(p=>[...p, d]);
+                  setNewSectionTitle(''); setNewSectionContent('');
+                  try{localStorage.setItem('sectionsSync', Date.now().toString());}catch(e){}
+                  alert('Halaman statis ditambahkan');
+                }
+              }} className="bg-red-600 text-white p-3 rounded w-fit">Tambah Halaman</button>
+
+              <h3 className="font-bold mt-6">Daftar Halaman</h3>
+              <ul className="space-y-2">
+                {sections.map(s=>(
+                  <li key={s.id} className="p-3 border rounded flex justify-between items-center">
+                    {editingSectionId === s.id ? (
+                      <div className="grid gap-2 flex-1">
+                        <input value={editSectionTitle} onChange={e=>setEditSectionTitle(e.target.value)} className="p-2 border rounded" />
+                        <textarea value={editSectionContent} onChange={e=>setEditSectionContent(e.target.value)} className="p-2 border rounded" rows="5" />
+                        <button onClick={async ()=>{
+                          const res = await fetch('/api/sections',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:s.id, title:editSectionTitle, content:editSectionContent})});
+                          if(res.ok){
+                            const upd = await res.json(); setSections(p=>p.map(x=>x.id===upd.id?upd:x));
+                            setEditingSectionId(null);
+                            try{localStorage.setItem('sectionsSync', Date.now().toString());}catch(e){}
+                          }
+                        }} className="text-green-600 w-fit">Simpan</button>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex-1">
+                          <span className="font-bold">{s.title}</span>
+                          <span className="ml-2 text-xs text-gray-400 font-mono">/sections/{s.id}</span>
+                        </div>
+                        <div className="flex gap-4">
+                          <button onClick={()=>{setEditingSectionId(s.id); setEditSectionTitle(s.title); setEditSectionContent(s.content);}} className="text-blue-600 text-xs font-bold uppercase">Edit</button>
+                          <button onClick={async ()=>{
+                            if(confirm('Hapus halaman?')){
+                              await fetch('/api/sections',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:s.id})});
+                              setSections(prev=>prev.filter(x=>x.id!==s.id));
+                              try{localStorage.setItem('sectionsSync', Date.now().toString());}catch(e){}
+                            }
+                          }} className="text-red-600 text-xs font-bold uppercase">Hapus</button>
+                        </div>
+                      </>
+                    )}
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
+
 
           {/* TOMBOL UPDATE */}
           <div className="mt-10 flex gap-4">
