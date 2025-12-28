@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { supabaseClient } from "../../lib/supabaseClient"; // Import Supabase Client
 
 export default function Admin() {
@@ -145,7 +146,7 @@ export default function Admin() {
 
     window.addEventListener('storage', handleStorage);
     return ()=> window.removeEventListener('storage', handleStorage);
-  }, [formData.sejarah, formData.hero_image]); // Dependensi ditambahkan
+  }, []); // Dependensi dikosongkan agar hanya berjalan sekali saat mount
 
   const handleUpdate = async () => {
     let updatedFormData = { ...formData };
@@ -347,7 +348,7 @@ export default function Admin() {
                     try{localStorage.setItem('newsSync', Date.now().toString());}catch(e){}; 
                     alert('Berita ditambahkan');
                     // Refresh halaman publik agar revalidate berlaku segera
-                    await fetch('/api/revalidate?path=/berita');
+                    try { await fetch('/api/revalidate?path=/berita'); } catch(e) {}
                   }else{alert('Gagal menambahkan berita');}
                 }} className="bg-red-600 text-white p-3 rounded">Tambah Berita</button>
               </div>
@@ -385,7 +386,7 @@ export default function Admin() {
                               setEditingNewsId(null); setEditNewsFile(null); 
                               try{localStorage.setItem('newsSync', Date.now().toString());}catch(e){}
                               // Refresh halaman publik agar revalidate berlaku segera
-                              await fetch('/api/revalidate?path=/berita'); 
+                              try { await fetch('/api/revalidate?path=/berita'); } catch(e) {}
                             }else{alert('Gagal update berita');}
                           }} className="text-green-600">Simpan</button>
                           <button onClick={()=>setEditingNewsId(null)} className="text-gray-600">Batal</button>
@@ -409,7 +410,7 @@ export default function Admin() {
                               setNewsItems(prev=>prev.filter(x=>x.id!==n.id)); 
                               try{localStorage.setItem('newsSync', Date.now().toString());}catch(e){}
                               // Refresh halaman publik agar revalidate berlaku segera
-                              await fetch('/api/revalidate?path=/berita');
+                              try { await fetch('/api/revalidate?path=/berita'); } catch(e) {}
                             } 
                           }} className="text-red-600">Hapus</button>
                         </div>
@@ -449,7 +450,7 @@ export default function Admin() {
                     try{localStorage.setItem('gallerySync', Date.now().toString());}catch(e){}; 
                     alert('Item galeri ditambahkan'); 
                     // Refresh halaman publik agar revalidate berlaku segera
-                    await fetch('/api/revalidate?path=/galeri');
+                    try { await fetch('/api/revalidate?path=/galeri'); } catch(e) {}
                   } else { alert('Gagal menambahkan'); }
                 }} className="bg-red-600 text-white p-3 rounded">Tambah Foto</button>
               </div>
@@ -479,7 +480,7 @@ export default function Admin() {
                               setEditingGalleryId(null); setEditGalleryFile(null); 
                               try{localStorage.setItem('gallerySync', Date.now().toString());}catch(e){} 
                               // Refresh halaman publik agar revalidate berlaku segera
-                              await fetch('/api/revalidate?path=/galeri');
+                              try { await fetch('/api/revalidate?path=/galeri'); } catch(e) {}
                             } else { alert('Gagal update'); }
                           }} className="text-green-600">Simpan</button>
                           <button onClick={()=>setEditingGalleryId(null)} className="text-gray-600">Batal</button>
@@ -499,7 +500,7 @@ export default function Admin() {
                               setGalleryItems(prev=>prev.filter(x=>x.id!==g.id)); 
                               try{localStorage.setItem('gallerySync', Date.now().toString());}catch(e){} 
                               // Refresh halaman publik agar revalidate berlaku segera
-                              await fetch('/api/revalidate?path=/galeri');
+                              try { await fetch('/api/revalidate?path=/galeri'); } catch(e) {}
                             } 
                           }} className="text-red-600">Hapus</button>
                         </div>
