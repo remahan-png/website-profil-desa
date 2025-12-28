@@ -206,7 +206,8 @@ export default function Admin() {
           <button onClick={() => setActiveTab('kontak')} className={`w-full text-left p-4 rounded-xl transition ${activeTab === 'kontak' ? 'bg-red-600' : 'hover:bg-white/5'}`}>Kelola Kontak</button>
           <button onClick={() => setActiveTab('sejarah')} className={`w-full text-left p-4 rounded-xl transition ${activeTab === 'sejarah' ? 'bg-red-600' : 'hover:bg-white/5'}`}>Kelola Sejarah</button>
         </nav>
-        <button onClick={handleLogout} className="mt-10 border-2 border-red-600 text-red-600 p-4 rounded-2xl font-black italic uppercase text-[10px] hover:bg-red-600 hover:text-white transition">Logout & Keluar</button>
+        <Link href="/" className="mt-4 border-2 border-white text-white p-4 rounded-2xl font-black italic uppercase text-[10px] hover:bg-white hover:text-[#111C44] transition text-center block">Kembali ke Website</Link>
+        <button onClick={handleLogout} className="mt-4 border-2 border-red-600 text-red-600 p-4 rounded-2xl font-black italic uppercase text-[10px] hover:bg-red-600 hover:text-white transition">Logout & Keluar</button>
       </aside>
 
       {/* AREA KONTEN UPDATE */}
