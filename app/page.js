@@ -7,6 +7,7 @@ import GalleryClient from "../components/GalleryClient";
 
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default async function Home() {
   const profilHref = "/profil";
@@ -14,7 +15,7 @@ export default async function Home() {
   // 1. Ambil data profil_desa
   const { data: desaData, error: desaError } = await supabase
     .from("profil_desa")
-    .select("*")
+    .select("sejarah, visi, misi, penduduk, kepala_keluarga:kk, pertanian, alamat, whatsapp:wa, hero_image, title, tagline, description")
     .single();
 
   if (desaError) {
@@ -25,7 +26,7 @@ export default async function Home() {
   // 2. Ambil data news (limit 3)
   const { data: newsData, error: newsError } = await supabase
     .from("news")
-    .select("*")
+    .select("id, title, content, image, created_at, category, excerpt")
     .order("created_at", { ascending: false })
     .limit(3);
 
@@ -53,7 +54,7 @@ export default async function Home() {
     heroBackgroundImage: desaData?.hero_image
       ? `url('${desaData.hero_image}')`
       : "url('https://images.unsplash.com/photo-1500651230702-0e2d8a49d4ad?w=1920&h=1080&fit=crop')",
-    // Variabel lain yang mungkin diperlukan di komponen yang di-import
+    // Variabel lain (untuk komponen yang ada di halaman utama)
     title: desaData?.title || 'Selamat Datang di',
     tagline: desaData?.tagline || 'Desa Lendang Belo',
     description: desaData?.description || 'Desa yang harmonis, maju, dan berbudaya dengan potensi pertanian dan pariwisata yang melimpah',
@@ -61,7 +62,7 @@ export default async function Home() {
     misi: desaData?.misi || [],
     sejarah: desaData?.sejarah || '',
     stats: desaData?.stats || {},
-    kontak: desaData?.kontak || {},
+    kontak: { wa: desaData?.wa || '0812-xxx-xxx' }, // Menggunakan alias 'wa' dari query
     alamat: desaData?.alamat || 'Lokasi Kantor Desa',
   };
 
@@ -121,13 +122,12 @@ export default async function Home() {
         {/* Content */}
         <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
           <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-            Selamat Datang di
+            {dataDesa.title}
             <br />
-            <span className="text-red-400">Desa Lendang Belo</span>
+            <span className="text-red-400">{dataDesa.tagline}</span>
           </h1>
           <p className="text-xl md:text-2xl mb-8 opacity-90">
-            Desa yang harmonis, maju, dan berbudaya dengan potensi pertanian dan
-            pariwisata yang melimpah
+            {dataDesa.description}
           </p>
           <Link
             href={profilHref}
@@ -145,7 +145,7 @@ export default async function Home() {
         </div>
       </section>
       {/* Sejarah Desa (mengganti sections) */}
-      <Sejarah />
+      <Sejarah sejarah={dataDesa.sejarah} />
       <section id="statistik" className="py-20 px-10 max-w-7xl mx-auto">
         <h3 className="text-4xl font-black italic uppercase mb-12 border-l-8 border-red-600 pl-6 tracking-tighter">
           Statistik Desa

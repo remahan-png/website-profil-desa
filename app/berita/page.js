@@ -1,4 +1,5 @@
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 import Link from "next/link";
 import { supabase } from "../../lib/supabase"; // Menggunakan import yang diminta
@@ -8,7 +9,7 @@ import Footer from "../../components/Footer";
 export default async function BeritaPage() {
   const { data: newsData, error } = await supabase
     .from("news")
-    .select("id, title, content, category, image, created_at")
+    .select("id, title, content, image, created_at, category, excerpt")
     .order("created_at", { ascending: false });
 
   if (error) console.error("Error fetching news:", error);

@@ -4,6 +4,7 @@ import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export const metadata = {
   title: "Kontak Desa - Desa Lendang Belo",
@@ -13,20 +14,20 @@ export const metadata = {
 export default async function KontakPage() {
   const { data: profilData, error: profilError } = await supabase
     .from('profil_desa')
-    .select('nama_desa, lokasi, wa, email')
+    .select('nama_desa, alamat, whatsapp:wa, email')
     .single();
 
   if (profilError) console.error("Error fetching profil_desa:", profilError);
 
   const dataDesa = profilData || {
       nama_desa: 'Lendang Belo',
-      lokasi: 'Jl. Contoh No. 1, Desa Lendang Belo',
+      alamat: 'Jl. Contoh No. 1, Desa Lendang Belo',
       wa: '0812-xxx-xxx',
       email: 'desa@lendangbelo.go.id',
   };
 
   const contactInfo = {
-    lokasi: dataDesa.lokasi,
+    lokasi: dataDesa.alamat, // Menggunakan lokasi sebagai alias untuk alamat di Client Component
     wa: dataDesa.wa,
     email: dataDesa.email,
     nama_desa: dataDesa.nama_desa,

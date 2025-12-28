@@ -4,6 +4,7 @@ import PotensiLive from "../../components/PotensiLive";
 import { supabase } from "../../lib/supabase";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export const metadata = {
   title: "Potensi Desa - Desa Lendang Belo",
@@ -36,7 +37,7 @@ export default async function Potensi() {
       </section>
 
       {/* Memberikan data ke PotensiLive */}
-      <PotensiLive dataPotensi={dataPotensi} />
+      <PotensiLive potensi={dataPotensi} />
 
       <Footer />
     </main>

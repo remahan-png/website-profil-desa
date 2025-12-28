@@ -5,13 +5,14 @@ import Footer from '../../../components/Footer';
 import { supabase } from '../../../lib/supabase';
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default async function BeritaDetailPage({ params }) {
   const { id } = params;
 
   const { data: newsItem, error } = await supabase
     .from('news')
-    .select('*')
+    .select('id, title, content, image, created_at, category, excerpt')
     .eq('id', id)
     .single();
 

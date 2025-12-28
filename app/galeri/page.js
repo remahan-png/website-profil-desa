@@ -4,12 +4,13 @@ import GalleryClient from "../../components/GalleryClient";
 import { supabase } from "../../lib/supabase";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default async function Galeri() {
   // Ambil data gallery
   const { data: galleryData, error: galleryError } = await supabase
     .from('gallery')
-    .select('*')
+    .select('id, url, caption, created_at')
     .order('created_at', { ascending: false });
 
   if (galleryError) console.error("Error fetching gallery:", galleryError);
@@ -31,7 +32,7 @@ export default async function Galeri() {
       </section>
 
       {/* Memberikan data ke GalleryClient */}
-      <GalleryClient dataGallery={dataGallery} />
+      <GalleryClient galleryItems={dataGallery} />
 
       <Footer />
     </main>

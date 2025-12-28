@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { supabaseClient } from "../../lib/supabaseClient";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -15,15 +16,18 @@ export default function Login() {
     setLoading(true);
     setError("");
 
-    // Simple authentication - in production, use proper authentication
-    if (username === "admin" && password === "desa123") {
-      // Set authentication in localStorage
-      localStorage.setItem("adminAuthenticated", "true");
-      localStorage.setItem("adminLoginTime", Date.now().toString());
+    // Otentikasi menggunakan Supabase
+    const { error } = await supabaseClient.auth.signInWithPassword({
+      email: username, // Menggunakan kolom username sebagai email (asumsi ini adalah email admin)
+      password: password,
+    });
 
-      router.push("/admin");
+    if (error) {
+      console.error("Login error:", error);
+      setError("Login gagal: Periksa email/password Anda.");
     } else {
-      setError("Username atau password salah");
+      // Jika berhasil, redirect ke halaman admin
+      router.push("/admin");
     }
 
     setLoading(false);
@@ -56,15 +60,15 @@ export default function Login() {
                 htmlFor="username"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Username
+                Email (Username)
               </label>
               <input
                 id="username"
                 name="username"
-                type="text"
+                type="email" // Diubah menjadi email
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                placeholder="Masukkan username"
+                placeholder="Masukkan email"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
@@ -99,9 +103,7 @@ export default function Login() {
           </button>
 
           <div className="text-center text-sm text-gray-600">
-            <p>Demo credentials:</p>
-            <p>Username: admin</p>
-            <p>Password: desa123</p>
+            <p>Pastikan Anda menggunakan email dan password yang terdaftar di Supabase Auth.</p>
           </div>
         </form>
       </div>

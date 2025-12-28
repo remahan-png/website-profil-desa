@@ -1,13 +1,12 @@
-import { redirect } from "next/navigation";
+"use client";
 
-export const metadata = {
-  title: "Admin Panel - Desa Lendang Belo",
-  description: "Panel administrasi website Desa Lendang Belo",
-};
+import AdminCheck from "../../components/AdminCheck";
 
 export default function AdminLayout({ children }) {
-  // Simple authentication check - in production, use proper middleware
-  // For now, we'll check if we're in development or if a session exists
-
-  return <div className="min-h-screen bg-gray-50">{children}</div>;
+  // AdminCheck akan menangani loading dan redirect ke /login jika tidak terautentikasi
+  return (
+    <AdminCheck showIfAdmin={true}>
+      {children}
+    </AdminCheck>
+  );
 }

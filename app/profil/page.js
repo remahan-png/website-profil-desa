@@ -5,6 +5,7 @@ import ProfileLive from "../../components/ProfileLive";
 import { supabase } from "../../lib/supabase";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 // Metadata dibiarkan statis untuk sementara
 export const metadata = {
@@ -17,13 +18,13 @@ export default async function Profil() {
   // Ambil data profil_desa
   const { data: profilData, error: profilError } = await supabase
     .from("profil_desa")
-    .select("*")
+    .select("sejarah, visi, misi, penduduk, kepala_keluarga:kk, pertanian, alamat, whatsapp:wa, nama_desa, description")
     .single();
 
   // Ambil data organisasi
   const { data: organisasiData, error: organisasiError } = await supabase
     .from("organisasi")
-    .select("*")
+    .select("id, name, role, nip, image_url")
     .order("order", { ascending: true });
 
   if (profilError) console.error("Error fetching profil_desa:", profilError);
@@ -56,7 +57,7 @@ export default async function Profil() {
       </section>
 
       {/* Memberikan data ke ProfileLive untuk konsistensi, meskipun ProfileLive mungkin Client Component */}
-      <ProfileLive dataDesa={dataDesa} dataOrganisasi={dataOrganisasi} />
+      <ProfileLive profile={dataDesa} officials={dataOrganisasi} />
 
       <Footer />
     </main>
