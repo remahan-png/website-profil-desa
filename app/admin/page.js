@@ -39,6 +39,33 @@ export default function Admin() {
   const [projects, setProjects] = useState([]);
   const [sections, setSections] = useState([]);
   
+  // APARAT management state
+  const [aparatItems, setAparatItems] = useState([]);
+  const [newAparatNama, setNewAparatNama] = useState('');
+  const [newAparatJabatan, setNewAparatJabatan] = useState('');
+  const [newAparatPendidikan, setNewAparatPendidikan] = useState('');
+  const [newAparatNipd, setNewAparatNipd] = useState('');
+  const [newAparatFile, setNewAparatFile] = useState(null);
+  const [editingAparatId, setEditingAparatId] = useState(null);
+  const [editAparatNama, setEditAparatNama] = useState('');
+  const [editAparatJabatan, setEditAparatJabatan] = useState('');
+  const [editAparatPendidikan, setEditAparatPendidikan] = useState('');
+  const [editAparatNipd, setEditAparatNipd] = useState('');
+  const [editAparatFoto, setEditAparatFoto] = useState('');
+  const [editAparatFile, setEditAparatFile] = useState(null);
+
+  // LAYANAN management state
+  const [layananItems, setLayananItems] = useState([]);
+  const [newLayananNama, setNewLayananNama] = useState('');
+  const [newLayananDeskripsi, setNewLayananDeskripsi] = useState('');
+  const [newLayananSyarat, setNewLayananSyarat] = useState('');
+  const [newLayananProsedur, setNewLayananProsedur] = useState('');
+  const [editingLayananId, setEditingLayananId] = useState(null);
+  const [editLayananNama, setEditLayananNama] = useState('');
+  const [editLayananDeskripsi, setEditLayananDeskripsi] = useState('');
+  const [editLayananSyarat, setEditLayananSyarat] = useState('');
+  const [editLayananProsedur, setEditLayananProsedur] = useState('');
+  
   // GALLERY management state
   const [galleryItems, setGalleryItems] = useState([]);
   const [newGalleryFile, setNewGalleryFile] = useState(null);
@@ -135,6 +162,8 @@ export default function Admin() {
     fetch('/api/sections').then(r=>r.json()).then(d=>setSections(Array.isArray(d)?d:[])).catch(()=>{});
     fetch('/api/news').then(r=>r.json()).then(d=>setNewsItems(Array.isArray(d)?d:[])).catch(()=>{});
     fetch('/api/gallery').then(r=>r.json()).then(d=>setGalleryItems(Array.isArray(d)?d:[])).catch(()=>{});
+    fetch('/api/aparat').then(r=>r.json()).then(d=>setAparatItems(Array.isArray(d)?d:[])).catch(()=>{});
+    fetch('/api/layanan').then(r=>r.json()).then(d=>setLayananItems(Array.isArray(d)?d:[])).catch(()=>{});
 
     // listen to storage events from other tabs (sync)
     function handleStorage(e) {
@@ -153,6 +182,12 @@ export default function Admin() {
       }
       if (e.key === 'gallerySync') {
         fetch('/api/gallery').then(r=>r.json()).then(d=>setGalleryItems(Array.isArray(d)?d:[])).catch(()=>{});
+      }
+      if (e.key === 'aparatSync') {
+        fetch('/api/aparat').then(r=>r.json()).then(d=>setAparatItems(Array.isArray(d)?d:[])).catch(()=>{});
+      }
+      if (e.key === 'layananSync') {
+        fetch('/api/layanan').then(r=>r.json()).then(d=>setLayananItems(Array.isArray(d)?d:[])).catch(()=>{});
       }
       if (e.key === 'siteSync') {
         fetch('/api/site').then(r=>r.json()).then(d=>{ 
@@ -231,6 +266,8 @@ export default function Admin() {
           <button onClick={() => setActiveTab('galeri')} className={`w-full text-left p-4 rounded-xl transition ${activeTab === 'galeri' ? 'bg-red-600' : 'hover:bg-white/5'}`}>Kelola Galeri</button>
           <button onClick={() => setActiveTab('kontak')} className={`w-full text-left p-4 rounded-xl transition ${activeTab === 'kontak' ? 'bg-red-600' : 'hover:bg-white/5'}`}>Kelola Kontak</button>
           <button onClick={() => setActiveTab('sejarah')} className={`w-full text-left p-4 rounded-xl transition ${activeTab === 'sejarah' ? 'bg-red-600' : 'hover:bg-white/5'}`}>Kelola Sejarah</button>
+          <button onClick={() => setActiveTab('aparat')} className={`w-full text-left p-4 rounded-xl transition ${activeTab === 'aparat' ? 'bg-red-600' : 'hover:bg-white/5'}`}>Kelola Aparat Desa</button>
+          <button onClick={() => setActiveTab('layanan')} className={`w-full text-left p-4 rounded-xl transition ${activeTab === 'layanan' ? 'bg-red-600' : 'hover:bg-white/5'}`}>Kelola Layanan Publik</button>
           <button onClick={() => setActiveTab('menu')} className={`w-full text-left p-4 rounded-xl transition ${activeTab === 'menu' ? 'bg-red-600' : 'hover:bg-white/5'}`}>Kelola Menu Link</button>
           <button onClick={() => setActiveTab('projek')} className={`w-full text-left p-4 rounded-xl transition ${activeTab === 'projek' ? 'bg-red-600' : 'hover:bg-white/5'}`}>Kelola Projek</button>
           <button onClick={() => setActiveTab('sections')} className={`w-full text-left p-4 rounded-xl transition ${activeTab === 'sections' ? 'bg-red-600' : 'hover:bg-white/5'}`}>Kelola Halaman Statis</button>
@@ -452,83 +489,176 @@ export default function Admin() {
 
           {activeTab === 'galeri' && (
             <div className="grid gap-4">
-              <h3 className="font-bold">Tambah Item Galeri</h3>
+... (konten galeri) ...
+            </div>
+          )}
+
+          {/* APARAT Admin UI */}
+          {activeTab === 'aparat' && (
+            <div className="grid gap-4">
+              <h3 className="font-bold">Tambah Aparat Desa</h3>
+              <input value={newAparatNama} onChange={e=>setNewAparatNama(e.target.value)} placeholder="Nama Aparat" className="p-3 border rounded" />
+              <input value={newAparatJabatan} onChange={e=>setNewAparatJabatan(e.target.value)} placeholder="Jabatan" className="p-3 border rounded" />
+              <input value={newAparatPendidikan} onChange={e=>setNewAparatPendidikan(e.target.value)} placeholder="Pendidikan Terakhir" className="p-3 border rounded" />
+              <input value={newAparatNipd} onChange={e=>setNewAparatNipd(e.target.value)} placeholder="NIPD (opsional)" className="p-3 border rounded" />
               <div>
-                <label className="block text-sm font-medium mb-1">Foto</label>
-                <input type="file" accept="image/*" onChange={(e)=>setNewGalleryFile(e.target.files && e.target.files[0])} className="p-2" />
-                {newGalleryFile && <div className="text-xs text-gray-600">Dipilih: {newGalleryFile.name}</div>}
+                <label className="block text-sm font-medium mb-1">Foto Aparat (file)</label>
+                <input type="file" accept="image/*" onChange={(e)=>setNewAparatFile(e.target.files && e.target.files[0])} className="p-2" />
+                {newAparatFile && <div className="text-xs text-gray-600 mt-2">Dipilih: {newAparatFile.name}</div>}
               </div>
-              <input value={newGalleryCaption} onChange={(e)=>setNewGalleryCaption(e.target.value)} placeholder="Keterangan / Caption" className="p-3 border rounded" />
               <div className="flex gap-2">
                 <button onClick={async ()=>{
-                  if (!newGalleryFile) return alert('Pilih foto dulu');
-                  let url = '';
-                  try {
-                    const fd = new FormData(); fd.append('file', newGalleryFile);
-                    const up = await fetch('/api/upload',{method:'POST',body:fd});
-                    if (up.ok) { const j = await up.json(); url = j.url || ''; }
-                  } catch (err) { console.error('Upload failed', err); }
-                  if (!url) return alert('Upload gagal');
-                  const payload = { url, caption: newGalleryCaption };
-                  const res = await fetch('/api/gallery',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-                  if (res.ok) { 
+                  let foto_url = '';
+                  if (newAparatFile) {
+                    try {
+                      const fd = new FormData(); fd.append('file', newAparatFile);
+                      const up = await fetch('/api/upload',{method:'POST',body:fd});
+                      if (up.ok) { const j = await up.json(); foto_url = j.url || foto_url; }
+                    } catch (err) { console.error('Upload failed', err); }
+                  }
+                  const payload = { nama: newAparatNama, jabatan: newAparatJabatan, pendidikan: newAparatPendidikan, nipd: newAparatNipd, foto_url };
+                  const res = await fetch('/api/aparat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+                  if(res.ok){
                     const it = await res.json(); 
-                    setGalleryItems(prev=>[it,...prev]); 
-                    setNewGalleryFile(null); setNewGalleryCaption(''); 
-                    try{localStorage.setItem('gallerySync', Date.now().toString());}catch(e){}; 
-                    alert('Item galeri ditambahkan'); 
-                    // Refresh halaman publik agar revalidate berlaku segera
-                    try { await fetch('/api/revalidate?path=/galeri'); } catch(e) {}
-                  } else { alert('Gagal menambahkan'); }
-                }} className="bg-red-600 text-white p-3 rounded">Tambah Foto</button>
+                    setAparatItems(prev=>[it,...prev]); 
+                    setNewAparatNama(''); setNewAparatJabatan(''); setNewAparatPendidikan(''); setNewAparatNipd(''); setNewAparatFile(null);
+                    try{localStorage.setItem('aparatSync', Date.now().toString());}catch(e){}; 
+                    alert('Aparat ditambahkan');
+                  }else{alert('Gagal menambahkan Aparat');}
+                }} className="bg-red-600 text-white p-3 rounded">Tambah Aparat</button>
               </div>
 
-              <h3 className="font-bold mt-6">Daftar Galeri</h3>
+              <h3 className="font-bold mt-6">Daftar Aparat Desa</h3>
               <ul className="space-y-3">
-                {galleryItems.map(g=> (
-                  <li key={g.id} className="p-3 border rounded">
-                    {editingGalleryId === g.id ? (
-                      <div className="grid gap-2">
+                {aparatItems.map(a=> (
+                  <li key={a.id} className="p-3 border rounded flex items-start gap-4">
+                    {editingAparatId === a.id ? (
+                      <div className="grid gap-2 flex-1">
+                        <input value={editAparatNama} onChange={e=>setEditAparatNama(e.target.value)} placeholder="Nama" className="p-2 border rounded" />
+                        <input value={editAparatJabatan} onChange={e=>setEditAparatJabatan(e.target.value)} placeholder="Jabatan" className="p-2 border rounded" />
+                        <input value={editAparatPendidikan} onChange={e=>setEditAparatPendidikan(e.target.value)} placeholder="Pendidikan" className="p-2 border rounded" />
+                        <input value={editAparatNipd} onChange={e=>setEditAparatNipd(e.target.value)} placeholder="NIPD" className="p-2 border rounded" />
                         <div>
-                          <label className="block text-sm font-medium mb-1">Ganti Foto</label>
-                          <input type="file" accept="image/*" onChange={(e)=>setEditGalleryFile(e.target.files && e.target.files[0])} className="p-2" />
+                          <label className="block text-sm font-medium mb-1">Ganti Foto (file)</label>
+                          <input type="file" accept="image/*" onChange={(e)=>setEditAparatFile(e.target.files && e.target.files[0])} className="p-2" />
+                          {editAparatFoto && !editAparatFile && <div className="text-xs text-gray-600">Saat ini: {editAparatFoto}</div>}
+                          {editAparatFile && <div className="text-xs text-gray-600">Dipilih: {editAparatFile.name}</div>}
                         </div>
-                        <input value={editGalleryCaption} onChange={e=>setEditGalleryCaption(e.target.value)} placeholder="Keterangan / Caption" className="p-2 border rounded" />
                         <div className="flex gap-2">
                           <button onClick={async ()=>{
-                            let url = g.url || '';
-                            if (editGalleryFile) {
-                              try { const fd = new FormData(); fd.append('file', editGalleryFile); const up = await fetch('/api/upload',{method:'POST',body:fd}); if (up.ok){ const j = await up.json(); url = j.url || url; } } catch(e){console.error('Upload failed',e);}
+                            let foto_url = editAparatFoto || '';
+                            if (editAparatFile) {
+                              try {
+                                const fd = new FormData(); fd.append('file', editAparatFile);
+                                const up = await fetch('/api/upload',{method:'POST',body:fd});
+                                if (up.ok) { const j = await up.json(); foto_url = j.url || foto_url; }
+                              } catch (err) { console.error('Upload failed', err); }
                             }
-                            const payload = { id: g.id, url, caption: editGalleryCaption };
-                            const res = await fetch('/api/gallery',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-                            if (res.ok) { 
+                            const payload = { id: a.id, nama: editAparatNama, jabatan: editAparatJabatan, pendidikan: editAparatPendidikan, nipd: editAparatNipd, foto_url };
+                            const res = await fetch('/api/aparat',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+                            if(res.ok){
                               const updated = await res.json(); 
-                              setGalleryItems(prev=>prev.map(x=>x.id===updated.id?updated:x)); 
-                              setEditingGalleryId(null); setEditGalleryFile(null); 
-                              try{localStorage.setItem('gallerySync', Date.now().toString());}catch(e){} 
-                              // Refresh halaman publik agar revalidate berlaku segera
-                              try { await fetch('/api/revalidate?path=/galeri'); } catch(e) {}
-                            } else { alert('Gagal update'); }
+                              setAparatItems(prev=>prev.map(x=>x.id===updated.id?updated:x)); 
+                              setEditingAparatId(null); setEditAparatFile(null); 
+                              try{localStorage.setItem('aparatSync', Date.now().toString());}catch(e){}
+                            }else{alert('Gagal update Aparat');}
                           }} className="text-green-600">Simpan</button>
-                          <button onClick={()=>setEditingGalleryId(null)} className="text-gray-600">Batal</button>
+                          <button onClick={()=>setEditingAparatId(null)} className="text-gray-600">Batal</button>
                         </div>
                       </div>
                     ) : (
-                      <div className="flex items-start justify-between">
+                      <>
+                        {a.foto_url && <img src={a.foto_url} alt={a.nama} className="w-24 h-24 object-cover rounded flex-shrink-0" />}
+                        <div className="flex-1">
+                          <strong className="text-lg">{a.nama}</strong>
+                          <div className="text-sm text-gray-600">{a.jabatan} — {a.pendidikan || '-'}</div>
+                          {a.nipd && <div className="text-xs text-gray-400">NIPD: {a.nipd}</div>}
+                          <div className="flex gap-4 mt-2">
+                            <button onClick={()=>{
+                              setEditingAparatId(a.id);
+                              setEditAparatNama(a.nama||''); setEditAparatJabatan(a.jabatan||''); setEditAparatPendidikan(a.pendidikan||''); setEditAparatNipd(a.nipd||''); setEditAparatFoto(a.foto_url||''); setEditAparatFile(null);
+                            }} className="text-blue-600 text-xs font-bold">EDIT</button>
+                            <button onClick={async ()=>{ 
+                              if(confirm('Hapus aparat ini?')){ 
+                                await fetch('/api/aparat',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:a.id})}); 
+                                setAparatItems(prev=>prev.filter(x=>x.id!==a.id)); 
+                                try{localStorage.setItem('aparatSync', Date.now().toString());}catch(e){}
+                              } 
+                            }} className="text-red-600 text-xs font-bold">HAPUS</button>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* LAYANAN Admin UI */}
+          {activeTab === 'layanan' && (
+            <div className="grid gap-4">
+              <h3 className="font-bold">Tambah Layanan Publik</h3>
+              <input value={newLayananNama} onChange={e=>setNewLayananNama(e.target.value)} placeholder="Nama Layanan (mis. Surat Keterangan Usaha)" className="p-3 border rounded" />
+              <textarea value={newLayananDeskripsi} onChange={e=>setNewLayananDeskripsi(e.target.value)} placeholder="Deskripsi Singkat Layanan" className="p-3 border rounded" rows={2} />
+              <textarea value={newLayananSyarat} onChange={e=>setNewLayananSyarat(e.target.value)} placeholder="Syarat-syarat yang diperlukan (per baris atau bullet points)" className="p-3 border rounded" rows={3} />
+              <textarea value={newLayananProsedur} onChange={e=>setNewLayananProsedur(e.target.value)} placeholder="Prosedur / Alur Pengurusan Layanan" className="p-3 border rounded" rows={3} />
+              
+              <div className="flex gap-2">
+                <button onClick={async ()=>{
+                  const payload = { nama_layanan: newLayananNama, deskripsi: newLayananDeskripsi, syarat: newLayananSyarat, prosedur: newLayananProsedur, is_active: true };
+                  const res = await fetch('/api/layanan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+                  if(res.ok){
+                    const it = await res.json(); 
+                    setLayananItems(prev=>[it,...prev]); 
+                    setNewLayananNama(''); setNewLayananDeskripsi(''); setNewLayananSyarat(''); setNewLayananProsedur('');
+                    try{localStorage.setItem('layananSync', Date.now().toString());}catch(e){}; 
+                    alert('Layanan ditambahkan');
+                  }else{alert('Gagal menambahkan Layanan');}
+                }} className="bg-red-600 text-white p-3 rounded">Tambah Layanan</button>
+              </div>
+
+              <h3 className="font-bold mt-6">Daftar Layanan Publik</h3>
+              <ul className="space-y-3">
+                {layananItems.map(l=> (
+                  <li key={l.id} className="p-3 border rounded">
+                    {editingLayananId === l.id ? (
+                      <div className="grid gap-2">
+                        <input value={editLayananNama} onChange={e=>setEditLayananNama(e.target.value)} placeholder="Nama Layanan" className="p-2 border rounded" />
+                        <textarea value={editLayananDeskripsi} onChange={e=>setEditLayananDeskripsi(e.target.value)} placeholder="Deskripsi" className="p-2 border rounded" rows={2} />
+                        <textarea value={editLayananSyarat} onChange={e=>setEditLayananSyarat(e.target.value)} placeholder="Syarat" className="p-2 border rounded" rows={3} />
+                        <textarea value={editLayananProsedur} onChange={e=>setEditLayananProsedur(e.target.value)} placeholder="Prosedur" className="p-2 border rounded" rows={3} />
+                        <div className="flex gap-2">
+                          <button onClick={async ()=>{
+                            const payload = { id: l.id, nama_layanan: editLayananNama, deskripsi: editLayananDeskripsi, syarat: editLayananSyarat, prosedur: editLayananProsedur };
+                            const res = await fetch('/api/layanan',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+                            if(res.ok){
+                              const updated = await res.json(); 
+                              setLayananItems(prev=>prev.map(x=>x.id===updated.id?updated:x)); 
+                              setEditingLayananId(null); 
+                              try{localStorage.setItem('layananSync', Date.now().toString());}catch(e){}
+                            }else{alert('Gagal update Layanan');}
+                          }} className="text-green-600">Simpan</button>
+                          <button onClick={()=>setEditingLayananId(null)} className="text-gray-600">Batal</button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex justify-between items-start">
                         <div>
-                          <img src={g.url} alt={g.caption} className="w-40 h-28 object-cover rounded" />
-                          <div className="text-sm mt-2">{g.caption}</div>
+                          <strong className="text-lg">{l.nama_layanan}</strong>
+                          <p className="mt-2 text-sm text-gray-700">{l.deskripsi}</p>
+                          <p className="mt-1 text-xs text-gray-500">Syarat: {l.syarat.substring(0, 50)}...</p>
                         </div>
                         <div className="flex flex-col gap-2">
-                          <button onClick={()=>{ setEditingGalleryId(g.id); setEditGalleryCaption(g.caption||''); setEditGalleryFile(null); }} className="text-blue-600">Edit</button>
+                          <button onClick={()=>{
+                            setEditingLayananId(l.id);
+                            setEditLayananNama(l.nama_layanan||''); setEditLayananDeskripsi(l.deskripsi||''); setEditLayananSyarat(l.syarat||''); setEditLayananProsedur(l.prosedur||'');
+                          }} className="text-blue-600">Edit</button>
                           <button onClick={async ()=>{ 
-                            if(confirm('Hapus item galeri?')){ 
-                              await fetch('/api/gallery',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:g.id})}); 
-                              setGalleryItems(prev=>prev.filter(x=>x.id!==g.id)); 
-                              try{localStorage.setItem('gallerySync', Date.now().toString());}catch(e){} 
-                              // Refresh halaman publik agar revalidate berlaku segera
-                              try { await fetch('/api/revalidate?path=/galeri'); } catch(e) {}
+                            if(confirm('Hapus layanan?')){ 
+                              await fetch('/api/layanan',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:l.id})}); 
+                              setLayananItems(prev=>prev.filter(x=>x.id!==l.id)); 
+                              try{localStorage.setItem('layananSync', Date.now().toString());}catch(e){}
                             } 
                           }} className="text-red-600">Hapus</button>
                         </div>
