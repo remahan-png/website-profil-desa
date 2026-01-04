@@ -1,8 +1,8 @@
-import { getAllDataForHomepage } from '@/lib/data'
-import Header from '@/components/Header.jsx'
-import Stats from '@/components/Stats.jsx'
-import Sejarah from '@/components/Sejarah.jsx'
-import VisiMisi from '@/components/VisiMisi.jsx'
+import { getAllDataForHomepage } from '../lib/data'
+import Header from '../components/Header.jsx'
+import Stats from '../components/Stats.jsx'
+import Sejarah from '../components/Sejarah.jsx'
+import VisiMisi from '../components/VisiMisi.jsx'
 
 // Next.js 13+ App Router automatically caches the results of `fetch` or database queries 
 // used in Server Components. The cache is automatically revalidated when using 
