@@ -1,65 +1,78 @@
-import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-
-// Inisialisasi Supabase Client
-// Menggunakan NEXT_PUBLIC_SUPABASE_URL dan NEXT_PUBLIC_SUPABASE_ANON_KEY
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error("Supabase environment variables are not set for upload API.");
-}
-
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
-const BUCKET_NAME = 'uploads'; // Asumsi nama bucket Supabase adalah 'uploads'
+import { supabase } from "@/lib/supabase";
+import { NextResponse } from "next/server";
 
 export async function POST(request) {
   try {
     const formData = await request.formData();
-    const file = formData.get('file');
+    const file = formData.get("file");
+    const bucket = formData.get("bucket"); // Contoh: 'background-images' atau 'berita-images'
 
     if (!file) {
-      return NextResponse.json({ error: 'No file provided' }, { status: 400 });
+      return NextResponse.json(
+        { success: false, message: "No file uploaded" },
+        { status: 400 }
+      );
     }
 
+    if (!bucket) {
+      return NextResponse.json(
+        { success: false, message: "Missing bucket name" },
+        { status: 400 }
+      );
+    }
+
+    // Konversi File ke Buffer
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-    
-    // Generate unique file path
-    const originalName = file.name || 'file';
-    const fileExtension = originalName.split('.').pop();
-    const timestamp = Date.now();
-    const randomString = Math.random().toString(36).substring(2, 9);
-    const fileName = `${timestamp}-${randomString}.${fileExtension}`;
-    const filePath = fileName; // Path di dalam bucket
 
-    // Upload ke Supabase Storage
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from(BUCKET_NAME)
+    // Buat nama file unik
+    const timestamp = Date.now();
+    const fileName = `${timestamp}-${file.name}`;
+    const filePath = `${bucket}/${fileName}`; // Path di Supabase Storage
+
+    // Upload file ke Supabase Storage
+    const { error: uploadError } = await supabase.storage
+      .from(bucket)
       .upload(filePath, buffer, {
-        cacheControl: '3600',
-        upsert: false,
-        contentType: file.type || 'image/jpeg',
+        cacheControl: "3600", // Cache selama 1 jam
+        upsert: true, // Timpa jika nama file sama (opsional, tergantung kebutuhan)
+        contentType: file.type,
       });
 
     if (uploadError) {
-      console.error("Supabase upload error:", uploadError.message);
-      return NextResponse.json({ error: uploadError.message }, { status: 500 });
+      console.error("Supabase upload error:", uploadError);
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Supabase upload failed",
+          error: uploadError.message,
+        },
+        { status: 500 }
+      );
     }
-    
-    // Ambil Public URL
+
+    // Dapatkan URL publik
     const { data: publicUrlData } = supabase.storage
-      .from(BUCKET_NAME)
-      .getPublicUrl(uploadData.path);
-      
-    if (!publicUrlData || !publicUrlData.publicUrl) {
-      return NextResponse.json({ error: 'Failed to get public URL' }, { status: 500 });
-    }
+      .from(bucket)
+      .getPublicUrl(filePath);
 
-    return NextResponse.json({ url: publicUrlData.publicUrl }, { status: 201 });
+    const publicUrl = publicUrlData.publicUrl;
 
-  } catch (err) {
-    console.error('Upload error:', err);
-    return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
+    // Berikan respons URL publik
+    return NextResponse.json({
+      success: true,
+      message: "File uploaded successfully",
+      url: publicUrl, // URL publik yang diminta
+    });
+  } catch (error) {
+    console.error("General upload error:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        message: "General upload failed",
+        error: error.message,
+      },
+      { status: 500 }
+    );
   }
 }
