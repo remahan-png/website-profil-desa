@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from 'react';
-import { handleUpdateProfileAndStats, handleAddNews, handleUpdatePotensi, handleUpdateAparat } from '@/lib/adminActions';
-import { supabaseClient } from '@/lib/supabaseClient'; // Import client for storage operations if needed, though actions handle it.
+import { handleUpdateProfileAndStats, handleAddNews, handleUpdatePotensi, handleUpdateAparat } from '../lib/adminActions';
+import { supabaseClient } from '../lib/supabaseClient'; // Import client for storage operations if needed, though actions handle it.
 
 // Komponen Pembantu untuk notifikasi
 const Notification = ({ message, isSuccess }) => {
