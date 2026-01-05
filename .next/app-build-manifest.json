@@ -1,39 +1,22 @@
 {
   "pages": {
     "/_not-found": [
-      "static/chunks/webpack-018f3f62c681fa13.js",
+      "static/chunks/webpack-6e83350c38ca310c.js",
       "static/chunks/fd9d1056-fe71d9d3341a0a8a.js",
       "static/chunks/938-0cae05d75ea6ae3d.js",
       "static/chunks/main-app-e79675c73b97b297.js",
       "static/chunks/app/_not-found-e0388bca29104022.js"
     ],
     "/layout": [
-      "static/chunks/webpack-018f3f62c681fa13.js",
+      "static/chunks/webpack-6e83350c38ca310c.js",
       "static/chunks/fd9d1056-fe71d9d3341a0a8a.js",
       "static/chunks/938-0cae05d75ea6ae3d.js",
       "static/chunks/main-app-e79675c73b97b297.js",
-      "static/css/5d3337f1d5148d1f.css",
-      "static/chunks/app/layout-93b71193bf7995cc.js"
-    ],
-    "/page": [
-      "static/chunks/webpack-018f3f62c681fa13.js",
-      "static/chunks/fd9d1056-fe71d9d3341a0a8a.js",
-      "static/chunks/938-0cae05d75ea6ae3d.js",
-      "static/chunks/main-app-e79675c73b97b297.js",
-      "static/chunks/60-1fad27b07f44ab36.js",
-      "static/chunks/135-95dd859753920067.js",
-      "static/chunks/app/page-766939e97dfddeac.js"
-    ],
-    "/login/page": [
-      "static/chunks/webpack-018f3f62c681fa13.js",
-      "static/chunks/fd9d1056-fe71d9d3341a0a8a.js",
-      "static/chunks/938-0cae05d75ea6ae3d.js",
-      "static/chunks/main-app-e79675c73b97b297.js",
-      "static/chunks/311-d6ff447c91a4b90f.js",
-      "static/chunks/app/login/page-acca165048bd20c2.js"
+      "static/css/1db772c1dac9afec.css",
+      "static/chunks/app/layout-dfbc145ba6c1a233.js"
     ],
     "/sections/[id]/page": [
-      "static/chunks/webpack-018f3f62c681fa13.js",
+      "static/chunks/webpack-6e83350c38ca310c.js",
       "static/chunks/fd9d1056-fe71d9d3341a0a8a.js",
       "static/chunks/938-0cae05d75ea6ae3d.js",
       "static/chunks/main-app-e79675c73b97b297.js",
@@ -41,26 +24,25 @@
       "static/chunks/135-95dd859753920067.js",
       "static/chunks/app/sections/[id]/page-e88697827a2a5584.js"
     ],
-    "/berita/page": [
-      "static/chunks/webpack-018f3f62c681fa13.js",
+    "/login/page": [
+      "static/chunks/webpack-6e83350c38ca310c.js",
       "static/chunks/fd9d1056-fe71d9d3341a0a8a.js",
       "static/chunks/938-0cae05d75ea6ae3d.js",
       "static/chunks/main-app-e79675c73b97b297.js",
-      "static/chunks/60-1fad27b07f44ab36.js",
-      "static/chunks/135-95dd859753920067.js",
-      "static/chunks/app/berita/page-a771455be217bc70.js"
+      "static/chunks/311-d6ff447c91a4b90f.js",
+      "static/chunks/app/login/page-acca165048bd20c2.js"
     ],
-    "/potensi/page": [
-      "static/chunks/webpack-018f3f62c681fa13.js",
+    "/page": [
+      "static/chunks/webpack-6e83350c38ca310c.js",
       "static/chunks/fd9d1056-fe71d9d3341a0a8a.js",
       "static/chunks/938-0cae05d75ea6ae3d.js",
       "static/chunks/main-app-e79675c73b97b297.js",
       "static/chunks/60-1fad27b07f44ab36.js",
       "static/chunks/135-95dd859753920067.js",
-      "static/chunks/app/potensi/page-6620b97b1a748bc3.js"
+      "static/chunks/app/page-766939e97dfddeac.js"
     ],
     "/berita/[id]/page": [
-      "static/chunks/webpack-018f3f62c681fa13.js",
+      "static/chunks/webpack-6e83350c38ca310c.js",
       "static/chunks/fd9d1056-fe71d9d3341a0a8a.js",
       "static/chunks/938-0cae05d75ea6ae3d.js",
       "static/chunks/main-app-e79675c73b97b297.js",
@@ -70,7 +52,7 @@
       "static/chunks/app/berita/[id]/page-cfeaaf2df04c4179.js"
     ],
     "/galeri/page": [
-      "static/chunks/webpack-018f3f62c681fa13.js",
+      "static/chunks/webpack-6e83350c38ca310c.js",
       "static/chunks/fd9d1056-fe71d9d3341a0a8a.js",
       "static/chunks/938-0cae05d75ea6ae3d.js",
       "static/chunks/main-app-e79675c73b97b297.js",
@@ -79,7 +61,7 @@
       "static/chunks/app/galeri/page-2d37e262a94fa5a0.js"
     ],
     "/kontak/page": [
-      "static/chunks/webpack-018f3f62c681fa13.js",
+      "static/chunks/webpack-6e83350c38ca310c.js",
       "static/chunks/fd9d1056-fe71d9d3341a0a8a.js",
       "static/chunks/938-0cae05d75ea6ae3d.js",
       "static/chunks/main-app-e79675c73b97b297.js",
@@ -87,8 +69,26 @@
       "static/chunks/135-95dd859753920067.js",
       "static/chunks/app/kontak/page-2dac6902a087a135.js"
     ],
+    "/potensi/page": [
+      "static/chunks/webpack-6e83350c38ca310c.js",
+      "static/chunks/fd9d1056-fe71d9d3341a0a8a.js",
+      "static/chunks/938-0cae05d75ea6ae3d.js",
+      "static/chunks/main-app-e79675c73b97b297.js",
+      "static/chunks/60-1fad27b07f44ab36.js",
+      "static/chunks/135-95dd859753920067.js",
+      "static/chunks/app/potensi/page-6620b97b1a748bc3.js"
+    ],
+    "/berita/page": [
+      "static/chunks/webpack-6e83350c38ca310c.js",
+      "static/chunks/fd9d1056-fe71d9d3341a0a8a.js",
+      "static/chunks/938-0cae05d75ea6ae3d.js",
+      "static/chunks/main-app-e79675c73b97b297.js",
+      "static/chunks/60-1fad27b07f44ab36.js",
+      "static/chunks/135-95dd859753920067.js",
+      "static/chunks/app/berita/page-a771455be217bc70.js"
+    ],
     "/profil/page": [
-      "static/chunks/webpack-018f3f62c681fa13.js",
+      "static/chunks/webpack-6e83350c38ca310c.js",
       "static/chunks/fd9d1056-fe71d9d3341a0a8a.js",
       "static/chunks/938-0cae05d75ea6ae3d.js",
       "static/chunks/main-app-e79675c73b97b297.js",
@@ -97,7 +97,7 @@
       "static/chunks/app/profil/page-7e24ecbcbe802f4d.js"
     ],
     "/admin/page": [
-      "static/chunks/webpack-018f3f62c681fa13.js",
+      "static/chunks/webpack-6e83350c38ca310c.js",
       "static/chunks/fd9d1056-fe71d9d3341a0a8a.js",
       "static/chunks/938-0cae05d75ea6ae3d.js",
       "static/chunks/main-app-e79675c73b97b297.js",
@@ -106,7 +106,7 @@
       "static/chunks/app/admin/page-f1d3b0087e3a7524.js"
     ],
     "/admin/layout": [
-      "static/chunks/webpack-018f3f62c681fa13.js",
+      "static/chunks/webpack-6e83350c38ca310c.js",
       "static/chunks/fd9d1056-fe71d9d3341a0a8a.js",
       "static/chunks/938-0cae05d75ea6ae3d.js",
       "static/chunks/main-app-e79675c73b97b297.js",
