@@ -1,4 +1,4 @@
-import { getAllDataForHomepage } from '../lib/data'
+import { getAllDataForHomepage } from '../lib/data.js'
 import Header from '../components/Header.jsx'
 import Stats from '../components/Stats.jsx'
 import Sejarah from '../components/Sejarah.jsx'
