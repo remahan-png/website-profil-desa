@@ -1,7 +1,8 @@
 "use client"
 import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase' 
-import AdminControlPanel from '@/components/AdminControlPanel'
+// Menggunakan jalur manual agar Vercel tidak bingung lagi
+import { supabase } from '../../lib/supabase' 
+import AdminControlPanel from '../../components/AdminControlPanel'
 
 export default function AdminPage() {
   const [data, setData] = useState(null)
@@ -10,15 +11,11 @@ export default function AdminPage() {
   useEffect(() => {
     async function loadData() {
       try {
-        const { data: profil, error } = await supabase
-          .from('profil_desa')
-          .select('*')
-          .single()
-        
-        if (error) throw error
+        const { data: profil, error } = await supabase.from('profil_desa').select('*').single()
+        if (error) console.error("Database belum siap:", error.message)
         setData(profil)
       } catch (err) {
-        console.error("Gagal memuat data admin:", err.message)
+        console.error("System Error:", err)
       } finally {
         setLoading(false)
       }
@@ -26,19 +23,13 @@ export default function AdminPage() {
     loadData()
   }, [])
 
-  if (loading) return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mx-auto"></div>
-        <p className="mt-4 text-gray-500">Menyiapkan Panel Admin...</p>
-      </div>
-    </div>
-  )
-  
+  if (loading) return <div className="p-20 text-center">Menyambungkan ke Server...</div>
+
+  // Jika data profil belum ada di Supabase, admin tetap bisa masuk tapi melihat pesan ini
   if (!data) return (
-    <div className="flex flex-col items-center justify-center min-h-screen text-center p-6">
-      <h1 className="text-red-600 font-bold text-2xl mb-2">Akses Terhambat</h1>
-      <p className="text-gray-600">Data profil desa belum ada di database. Silakan jalankan script SQL di Supabase.</p>
+    <div className="p-20 text-center">
+      <h1 className="text-xl font-bold">Data Profil Desa Kosong</h1>
+      <p>Silakan jalankan SQL ALTER TABLE di Supabase agar kolom 'nama_desa' muncul.</p>
     </div>
   )
 
