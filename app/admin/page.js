@@ -8,16 +8,31 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    async function checkData() {
-      const { data: profil } = await supabase.from('profil_desa').select('*').single()
-      setData(profil)
-      setLoading(false)
+    async function loadData() {
+      try {
+        const { data: profil, error } = await supabase.from('profil_desa').select('*').single()
+        if (error) throw error
+        setData(profil)
+      } catch (err) {
+        console.error("Gagal memuat data:", err.message)
+      } finally {
+        setLoading(false)
+      }
     }
-    checkData()
+    loadData()
   }, [])
 
-  if (loading) return <div className="p-20 text-center">Memvalidasi Dashboard...</div>
-  if (!data) return <div className="p-20 text-center text-red-600">Data Database Kosong. Jalankan SQL Supabase!</div>
+  if (loading) return <div className="p-20 text-center font-medium">Memuat Dashboard...</div>
 
-  return <AdminControlPanel initialData={data} />
+  // Jika data profil ditemukan, tampilkan Panel Kontrol yang bisa Anda gunakan untuk update
+  if (data) {
+    return <AdminControlPanel initialData={data} />
+  }
+
+  return (
+    <div className="p-20 text-center text-red-600">
+      <h1 className="font-bold text-xl">Database Belum Siap</h1>
+      <p>Silakan jalankan perintah SQL di Supabase agar data profil muncul.</p>
+    </div>
+  )
 }
