@@ -1,38 +1,40 @@
-"use client"
-import { useEffect, useState } from 'react'
-import { supabase } from '../../lib/supabase'
-import AdminControlPanel from '../../components/AdminControlPanel'
+"use client";
+import { useState, useEffect } from "react";
+import { supabase } from "../../lib/supabase";
+import AdminControlPanel from "../../components/AdminControlPanel";
 
 export default function AdminPage() {
-  const [data, setData] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadData() {
       try {
-        const { data: profil, error } = await supabase.from('profil_desa').select('*').single()
-        if (error) throw error
-        setData(profil)
+        const { data: profil, error } = await supabase
+          .from("profil_desa")
+          .select("*")
+          .single();
+        if (error) throw error;
+        setData(profil);
       } catch (err) {
-        console.error("Gagal memuat data:", err.message)
+        console.error("Gagal memuat data:", err.message);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
-    loadData()
-  }, [])
+    loadData();
+  }, []);
 
-  if (loading) return <div className="p-20 text-center font-medium">Memuat Dashboard...</div>
+  if (loading)
+    return <div className="p-20 text-center">Memvalidasi Data Admin...</div>;
 
-  // Jika data profil ditemukan, tampilkan Panel Kontrol yang bisa Anda gunakan untuk update
-  if (data) {
-    return <AdminControlPanel initialData={data} />
-  }
+  if (!data)
+    return (
+      <div className="p-20 text-center">
+        <h1 className="text-red-600 font-bold">Data Belum Siap</h1>
+        <p>Pastikan Anda sudah menjalankan SQL di Supabase.</p>
+      </div>
+    );
 
-  return (
-    <div className="p-20 text-center text-red-600">
-      <h1 className="font-bold text-xl">Database Belum Siap</h1>
-      <p>Silakan jalankan perintah SQL di Supabase agar data profil muncul.</p>
-    </div>
-  )
+  return <AdminControlPanel initialData={data} />;
 }
