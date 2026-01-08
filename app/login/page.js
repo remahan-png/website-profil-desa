@@ -3,16 +3,26 @@ import { useState } from "react";
 import { supabase } from "../../lib/supabaseClient.js";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    // Map username to email (you can customize this mapping)
+    const emailMap = {
+      "admin": "admin@desaweb.com",
+      "superadmin": "superadmin@desaweb.com",
+      // Add more username-email mappings as needed
+    };
+
+    const email = emailMap[username.toLowerCase()] || `${username}@desaweb.com`;
+
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-    if (error) alert(error.message);
+    if (error) alert("Username atau password salah: " + error.message);
     else window.location.href = "/admin";
   };
 
@@ -24,10 +34,10 @@ export default function LoginPage() {
       >
         <h1 className="text-2xl font-bold mb-6 text-center">Login Admin</h1>
         <input
-          type="email"
-          placeholder="Email"
+          type="text"
+          placeholder="Username"
           className="w-full mb-4 p-2 border rounded"
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => setUsername(e.target.value)}
           required
         />
         <input
@@ -43,6 +53,10 @@ export default function LoginPage() {
         >
           Masuk
         </button>
+        <div className="mt-4 text-sm text-gray-600 text-center">
+          <p>Username default: <strong>admin</strong></p>
+          <p>Password: sesuai yang dibuat di Supabase</p>
+        </div>
       </form>
     </div>
   );
