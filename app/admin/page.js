@@ -1,10 +1,13 @@
+export const dynamic = 'force-dynamic';
+
 "use client";
-export const dynamic = "force-dynamic";
 
-import { useState, useEffect } from "react";
-import { supabase } from "../../lib/supabase";
-import AdminControlPanel from "../../components/AdminControlPanel";
+import { useState, useEffect } from 'react';
+import { supabase } from '../../lib/supabase';
+import AdminControlPanel from '../../components/AdminControlPanel';
 
+// Halaman Admin ini berfungsi sebagai Client Component
+// yang mengambil semua data yang diperlukan untuk AdminControlPanel
 export default function AdminPage() {
   const [allData, setAllData] = useState({
     profil: null,
@@ -17,16 +20,16 @@ export default function AdminPage() {
   useEffect(() => {
     async function fetchAllData() {
       try {
-        // Mengambil data dari 4 tabel sekaligus
+        // Mengambil data dari 4 tabel sekaligus menggunakan Promise.all
         const [profilRes, beritaRes, galeriRes, perangkatRes] =
           await Promise.all([
-            supabase.from("profil_desa").select("*").single(),
+            supabase.from('profil_desa').select('*').single(),
             supabase
-              .from("berita")
-              .select("*")
-              .order("tanggal", { ascending: false }),
-            supabase.from("galeri").select("*"),
-            supabase.from("perangkat_desa").select("*"),
+              .from('berita')
+              .select('*')
+              .order('tanggal', { ascending: false }),
+            supabase.from('galeri').select('*'),
+            supabase.from('perangkat_desa').select('*'),
           ]);
 
         setAllData({
@@ -36,7 +39,7 @@ export default function AdminPage() {
           perangkat: perangkatRes.data || [],
         });
       } catch (err) {
-        console.error("Gagal mengambil data lengkap:", err);
+        console.error('Gagal mengambil data lengkap:', err);
       } finally {
         setLoading(false);
       }
