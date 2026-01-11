@@ -1,8 +1,9 @@
-"use client";
+  "use client";
 
-import { useState } from 'react';
-import { handleUpdateProfileAndStats, handleAddNews, handleUpdatePotensi, handleUpdateAparat } from '../lib/adminActions';
-import { supabaseClient } from '../lib/supabaseClient'; // Import client for storage operations if needed, though actions handle it.
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { supabase } from '../lib/supabaseClient';
+import { handleUpdateProfileAndStats, handleAddNews, handleUpdatePotensi, handleUpdateAparat, handleAddGallery } from '../lib/adminActions';
 
 // Komponen Pembantu untuk notifikasi
 const Notification = ({ message, isSuccess }) => {
@@ -16,9 +17,8 @@ const Notification = ({ message, isSuccess }) => {
     );
 };
 
-// --- Form Update Profil Desa, Statistik, dan Background Hero ---
-function UpdateProfileForm() {
-    // State for profil_desa/statistik fields
+// --- Form Update Profil Desa & Statistik ---
+function ProfileStatsForm() {
     const [visi, setVisi] = useState('');
     const [misi, setMisi] = useState('');
     const [populasi, setPopulasi] = useState(0);
@@ -29,157 +29,152 @@ function UpdateProfileForm() {
     const [alamat, setAlamat] = useState('');
     const [telepon, setTelepon] = useState('');
     const [email, setEmail] = useState('');
-    const [heroImageFile, setHeroImageFile] = useState(null); // For background_hero upload
-
+    const [heroImageFile, setHeroImageFile] = useState(null);
     const [message, setMessage] = useState('');
     const [isSuccess, setIsSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const loadData = async () => {
+            const { data } = await supabase.from('profil_desa').select('*').single();
+            if (data) {
+                setVisi(data.visi || '');
+                setMisi(data.misi || '');
+                setPopulasi(data.populasi || 0);
+                setJumlahKk(data.jumlah_kk || 0);
+                setPersentase(data.persentase || 0);
+                setLuasWilayah(data.luas_wilayah || 0);
+                setKetinggian(data.ketinggian || 0);
+                setAlamat(data.alamat || '');
+                setTelepon(data.telepon || '');
+                setEmail(data.email || '');
+            }
+        };
+        loadData();
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setMessage('');
 
-        const profileFields = { 
-            visi, 
-            misi, 
-            alamat, 
-            telepon, 
-            email 
-        };
-        
-        const statsFields = { 
-            populasi: parseInt(populasi), 
-            jumlah_kk: parseInt(jumlahKk), 
+        const profileFields = { visi, misi, alamat, telepon, email };
+        const statsFields = {
+            populasi: parseInt(populasi),
+            jumlah_kk: parseInt(jumlahKk),
             persentase: parseFloat(persentase),
             luas_wilayah: parseFloat(luasWilayah),
             ketinggian: parseFloat(ketinggian)
         };
 
-        // Logika Wajib: Gunakan isUploading/isLoading untuk mengubah teks tombol
-        
         const result = await handleUpdateProfileAndStats(profileFields, statsFields, heroImageFile);
-        
+
         setIsSuccess(result.success);
         setMessage(result.message);
         setLoading(false);
 
         if (result.success) {
-            // Logika Wajib: Tampilkan alert("Data Berhasil Diperbarui!")
-            alert("Data Berhasil Diperbarui!");
+            alert("Data Profil & Statistik Berhasil Diperbarui!");
         }
     };
 
     return (
-        <div className="p-6 border rounded-lg shadow-md bg-white col-span-2">
-            <h3 className="text-2xl font-semibold mb-4">1. Perbarui Profil Desa & Statistik (Tabel: profil_desa)</h3>
-            <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
-                {/* Kolom Visi & Misi */}
-                <div className="col-span-2">
-                    <label className="block text-gray-700">Visi</label>
-                    <textarea 
-                        value={visi} 
-                        onChange={(e) => setVisi(e.target.value)}
-                        className="w-full mt-1 p-2 border rounded"
-                        rows="2"
-                        required
-                    />
+        <div className="bg-white p-6 rounded-lg shadow-md">
+            <h3 className="text-xl font-semibold mb-4 text-gray-800">Profil Desa & Statistik</h3>
+            <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700">Visi</label>
+                        <textarea value={visi} onChange={(e) => setVisi(e.target.value)}
+                            className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" rows="2" required />
+                    </div>
+                    <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700">Misi</label>
+                        <textarea value={misi} onChange={(e) => setMisi(e.target.value)}
+                            className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" rows="3" required />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Populasi</label>
+                        <input type="number" value={populasi} onChange={(e) => setPopulasi(e.target.value)}
+                            className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Jumlah KK</label>
+                        <input type="number" value={jumlahKk} onChange={(e) => setJumlahKk(e.target.value)}
+                            className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Persentase (%)</label>
+                        <input type="number" step="0.01" value={persentase} onChange={(e) => setPersentase(e.target.value)}
+                            className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Luas Wilayah (Ha/Km²)</label>
+                        <input type="number" step="0.01" value={luasWilayah} onChange={(e) => setLuasWilayah(e.target.value)}
+                            className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Ketinggian (mdpl)</label>
+                        <input type="number" value={ketinggian} onChange={(e) => setKetinggian(e.target.value)}
+                            className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Alamat</label>
+                        <input type="text" value={alamat} onChange={(e) => setAlamat(e.target.value)}
+                            className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Telepon</label>
+                        <input type="text" value={telepon} onChange={(e) => setTelepon(e.target.value)}
+                            className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required />
+                    </div>
+                    <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700">Email</label>
+                        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+                            className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required />
+                    </div>
+                    <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700">Background Hero</label>
+                        <input type="file" accept="image/*" onChange={(e) => setHeroImageFile(e.target.files ? e.target.files[0] : null)}
+                            className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" />
+                    </div>
                 </div>
-                <div className="col-span-2">
-                    <label className="block text-gray-700">Misi</label>
-                    <textarea 
-                        value={misi} 
-                        onChange={(e) => setMisi(e.target.value)}
-                        className="w-full mt-1 p-2 border rounded"
-                        rows="3"
-                        required
-                    />
-                </div>
-
-                {/* Kolom Statistik (asumsi di profil_desa) */}
-                <div>
-                    <label className="block text-gray-700">Populasi</label>
-                    <input type="number" value={populasi} onChange={(e) => setPopulasi(e.target.value)} className="w-full mt-1 p-2 border rounded" required />
-                </div>
-                <div>
-                    <label className="block text-gray-700">Jumlah KK</label>
-                    <input type="number" value={jumlahKk} onChange={(e) => setJumlahKk(e.target.value)} className="w-full mt-1 p-2 border rounded" required />
-                </div>
-                <div>
-                    <label className="block text-gray-700">Persentase (%)</label>
-                    <input type="number" step="0.01" value={persentase} onChange={(e) => setPersentase(e.target.value)} className="w-full mt-1 p-2 border rounded" required />
-                </div>
-                <div>
-                    <label className="block text-gray-700">Luas Wilayah (Ha/Km²)</label>
-                    <input type="number" step="0.01" value={luasWilayah} onChange={(e) => setLuasWilayah(e.target.value)} className="w-full mt-1 p-2 border rounded" required />
-                </div>
-                <div>
-                    <label className="block text-gray-700">Ketinggian (mdpl)</label>
-                    <input type="number" value={ketinggian} onChange={(e) => setKetinggian(e.target.value)} className="w-full mt-1 p-2 border rounded" required />
-                </div>
-
-                {/* Kolom Kontak & Alamat */}
-                <div>
-                    <label className="block text-gray-700">Alamat</label>
-                    <input type="text" value={alamat} onChange={(e) => setAlamat(e.target.value)} className="w-full mt-1 p-2 border rounded" required />
-                </div>
-                <div>
-                    <label className="block text-gray-700">Telepon</label>
-                    <input type="text" value={telepon} onChange={(e) => setTelepon(e.target.value)} className="w-full mt-1 p-2 border rounded" required />
-                </div>
-                <div className="col-span-2">
-                    <label className="block text-gray-700">Email</label>
-                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full mt-1 p-2 border rounded" required />
-                </div>
-
-                {/* Menu Beranda: Upload Background Hero */}
-                <div className="col-span-2">
-                    <label className="block text-gray-700">Background Hero (URL akan disimpan di kolom background_hero)</label>
-                    <input 
-                        type="file" 
-                        accept="image/*"
-                        onChange={(e) => setHeroImageFile(e.target.files ? e.target.files[0] : null)}
-                        className="w-full mt-1 p-2 border rounded"
-                    />
-                </div>
-
-                <div className="col-span-2">
-                    <button 
-                        type="submit" 
-                        disabled={loading}
-                        className="w-full py-3 px-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-blue-400 transition duration-150"
-                    >
-                        {loading ? 'Sedang Memproses...' : 'PERBARUI DATA (Profil & Statistik)'}
-                    </button>
-                </div>
+                <button type="submit" disabled={loading}
+                    className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 disabled:bg-blue-400 transition duration-150">
+                    {loading ? 'Menyimpan...' : 'Simpan Perubahan'}
+                </button>
                 <Notification message={message} isSuccess={isSuccess} />
             </form>
         </div>
     );
 }
 
-// --- Form Tambah Berita Baru ---
-function AddNewsForm() {
+// --- Form Manajemen Berita ---
+function NewsManagementForm() {
+    const [news, setNews] = useState([]);
     const [title, setTitle] = useState('');
     const [excerpt, setExcerpt] = useState('');
     const [content, setContent] = useState('');
-    const [author, setAuthor] = useState('Admin');
     const [imageFile, setImageFile] = useState(null);
     const [message, setMessage] = useState('');
     const [isSuccess, setIsSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        loadNews();
+    }, []);
+
+    const loadNews = async () => {
+        const { data } = await supabase.from('news').select('*').order('created_at', { ascending: false });
+        setNews(data || []);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setMessage('');
 
-        const newsData = { title, excerpt, content, author }; // author is used instead of penulis for consistency in component state
-        
-        // Note: handleAddNews expects title, excerpt, content, and image_url placeholder in newsData, but uses author internally for state tracking. 
-        // We'll map title -> title, excerpt -> excerpt, content -> content.
-        const result = await handleAddNews({ title, excerpt, content, image_url: null }, imageFile); 
-        // Note: handleAddNews requires title, excerpt, content, image_url placeholder, and handles file upload internally.
+        const result = await handleAddNews({ title, excerpt, content }, imageFile);
 
         setIsSuccess(result.success);
         setMessage(result.message);
@@ -190,70 +185,134 @@ function AddNewsForm() {
             setExcerpt('');
             setContent('');
             setImageFile(null);
-            setAuthor('Admin');
+            loadNews();
         }
     };
 
     return (
-        <div className="p-6 border rounded-lg shadow-md bg-white">
-            <h3 className="text-2xl font-semibold mb-4">2. Tambah Berita Baru (Tabel: news)</h3>
-            <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="bg-white p-6 rounded-lg shadow-md">
+            <h3 className="text-xl font-semibold mb-4 text-gray-800">Manajemen Berita</h3>
+
+            <form onSubmit={handleSubmit} className="mb-6 space-y-4">
                 <div>
-                    <label className="block text-gray-700">Judul (title)</label>
-                    <input 
-                        type="text"
-                        value={title} 
-                        onChange={(e) => setTitle(e.target.value)}
-                        className="w-full mt-1 p-2 border rounded"
-                        required
-                    />
+                    <label className="block text-sm font-medium text-gray-700">Judul Berita</label>
+                    <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}
+                        className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required />
                 </div>
                 <div>
-                    <label className="block text-gray-700">Excerpt (excerpt)</label>
-                    <input 
-                        type="text"
-                        value={excerpt} 
-                        onChange={(e) => setExcerpt(e.target.value)}
-                        className="w-full mt-1 p-2 border rounded"
-                        required
-                    />
+                    <label className="block text-sm font-medium text-gray-700">Ringkasan</label>
+                    <input type="text" value={excerpt} onChange={(e) => setExcerpt(e.target.value)}
+                        className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required />
                 </div>
                 <div>
-                    <label className="block text-gray-700">Isi Berita (content)</label>
-                    <textarea 
-                        value={content} 
-                        onChange={(e) => setContent(e.target.value)}
-                        className="w-full mt-1 p-2 border rounded"
-                        rows="5"
-                        required
-                    />
+                    <label className="block text-sm font-medium text-gray-700">Isi Berita</label>
+                    <textarea value={content} onChange={(e) => setContent(e.target.value)}
+                        className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" rows="4" required />
                 </div>
                 <div>
-                    <label className="block text-gray-700">Foto Berita (image_url)</label>
-                    <input 
-                        type="file" 
-                        accept="image/*"
-                        onChange={(e) => setImageFile(e.target.files ? e.target.files[0] : null)}
-                        className="w-full mt-1 p-2 border rounded"
-                    />
+                    <label className="block text-sm font-medium text-gray-700">Foto Berita</label>
+                    <input type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files ? e.target.files[0] : null)}
+                        className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" />
                 </div>
-                <input type="hidden" value={author} onChange={(e) => setAuthor(e.target.value)} />
-                
-                <button 
-                    type="submit" 
-                    disabled={loading}
-                    className="w-full py-2 px-4 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 disabled:bg-green-400 transition duration-150"
-                >
-                    {loading ? 'Sedang Memproses...' : 'PERBARUI DATA (INSERT Berita)'}
+                <button type="submit" disabled={loading}
+                    className="w-full py-2 px-4 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 disabled:bg-green-400 transition duration-150">
+                    {loading ? 'Menambah...' : 'Tambah Berita'}
                 </button>
-                <Notification message={message} isSuccess={isSuccess} />
             </form>
+
+            <div className="border-t pt-4">
+                <h4 className="text-lg font-medium mb-3">Daftar Berita</h4>
+                <div className="space-y-2 max-h-60 overflow-y-auto">
+                    {news.map(item => (
+                        <div key={item.id} className="p-3 border rounded-md bg-gray-50">
+                            <h5 className="font-medium">{item.title}</h5>
+                            <p className="text-sm text-gray-600">{item.excerpt}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <Notification message={message} isSuccess={isSuccess} />
+        </div>
+    );
+}
+
+// --- Form Manajemen Galeri ---
+function GalleryManagementForm() {
+    const [gallery, setGallery] = useState([]);
+    const [caption, setCaption] = useState('');
+    const [imageFile, setImageFile] = useState(null);
+    const [message, setMessage] = useState('');
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        loadGallery();
+    }, []);
+
+    const loadGallery = async () => {
+        const { data } = await supabase.from('galeri').select('*').order('created_at', { ascending: false });
+        setGallery(data || []);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setMessage('');
+
+        const result = await handleAddGallery({ caption }, imageFile);
+
+        setIsSuccess(result.success);
+        setMessage(result.message);
+        setLoading(false);
+
+        if (result.success) {
+            setCaption('');
+            setImageFile(null);
+            loadGallery();
+        }
+    };
+
+    return (
+        <div className="bg-white p-6 rounded-lg shadow-md">
+            <h3 className="text-xl font-semibold mb-4 text-gray-800">Manajemen Galeri</h3>
+
+            <form onSubmit={handleSubmit} className="mb-6 space-y-4">
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Caption Gambar</label>
+                    <input type="text" value={caption} onChange={(e) => setCaption(e.target.value)}
+                        className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Upload Gambar</label>
+                    <input type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files ? e.target.files[0] : null)}
+                        className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required />
+                </div>
+                <button type="submit" disabled={loading}
+                    className="w-full py-2 px-4 bg-purple-600 text-white font-semibold rounded-md hover:bg-purple-700 disabled:bg-purple-400 transition duration-150">
+                    {loading ? 'Mengupload...' : 'Tambah ke Galeri'}
+                </button>
+            </form>
+
+            <div className="border-t pt-4">
+                <h4 className="text-lg font-medium mb-3">Galeri Foto</h4>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-60 overflow-y-auto">
+                    {gallery.map(item => (
+                        <div key={item.id} className="border rounded-md p-2 bg-gray-50">
+                            <img src={item.image_url} alt={item.caption} className="w-full h-20 object-cover rounded" />
+                            <p className="text-xs mt-1 text-center">{item.caption}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <Notification message={message} isSuccess={isSuccess} />
         </div>
     );
 }
 
 // --- Form Update Potensi ---
-function UpdatePotensiForm() {
+function PotensiForm() {
     const [potensiData, setPotensiData] = useState({
         'Infrastruktur - Jalan & Jembatan': '',
         'Air Bersih': '',
@@ -263,6 +322,18 @@ function UpdatePotensiForm() {
     const [message, setMessage] = useState('');
     const [isSuccess, setIsSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const loadData = async () => {
+            for (const key of Object.keys(potensiData)) {
+                const { data } = await supabase.from('potensi').select('deskripsi').eq('nama', key).single();
+                if (data) {
+                    setPotensiData(prev => ({ ...prev, [key]: data.deskripsi }));
+                }
+            }
+        };
+        loadData();
+    }, []);
 
     const handleChange = (key, value) => {
         setPotensiData(prev => ({ ...prev, [key]: value }));
@@ -280,34 +351,24 @@ function UpdatePotensiForm() {
         setLoading(false);
 
         if (result.success) {
-            alert("Data Berhasil Diperbarui!");
+            alert("Data Potensi Berhasil Diperbarui!");
         }
     };
 
-    const keys = Object.keys(potensiData);
-
     return (
-        <div className="p-6 border rounded-lg shadow-md bg-white col-span-2 lg:col-span-1">
-            <h3 className="text-2xl font-semibold mb-4">3. Perbarui Potensi Desa (Tabel: potensi)</h3>
+        <div className="bg-white p-6 rounded-lg shadow-md">
+            <h3 className="text-xl font-semibold mb-4 text-gray-800">Potensi Desa</h3>
             <form onSubmit={handleSubmit} className="space-y-4">
-                {keys.map(key => (
+                {Object.keys(potensiData).map(key => (
                     <div key={key}>
-                        <label className="block text-gray-700">{key}</label>
-                        <textarea 
-                            value={potensiData[key]} 
-                            onChange={(e) => handleChange(key, e.target.value)}
-                            className="w-full mt-1 p-2 border rounded"
-                            rows="2"
-                            required
-                        />
+                        <label className="block text-sm font-medium text-gray-700">{key}</label>
+                        <textarea value={potensiData[key]} onChange={(e) => handleChange(key, e.target.value)}
+                            className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" rows="3" required />
                     </div>
                 ))}
-                <button 
-                    type="submit" 
-                    disabled={loading}
-                    className="w-full py-2 px-4 bg-yellow-600 text-white font-semibold rounded-lg hover:bg-yellow-700 disabled:bg-yellow-400 transition duration-150"
-                >
-                    {loading ? 'Sedang Memproses...' : 'PERBARUI DATA (Potensi)'}
+                <button type="submit" disabled={loading}
+                    className="w-full py-2 px-4 bg-orange-600 text-white font-semibold rounded-md hover:bg-orange-700 disabled:bg-orange-400 transition duration-150">
+                    {loading ? 'Menyimpan...' : 'Simpan Perubahan'}
                 </button>
                 <Notification message={message} isSuccess={isSuccess} />
             </form>
@@ -315,18 +376,23 @@ function UpdatePotensiForm() {
     );
 }
 
-// --- Form Update Aparat Desa ---
-function UpdateAparatForm() {
-    const [updates, setUpdates] = useState([
-        { id: 1, nama: 'H. Riadussholihin', jabatan: 'Kepala Desa', newNama: 'H. Riadussholihin', newJabatan: 'Kepala Desa' },
-        { id: 2, nama: 'Muhammad Kamran', jabatan: 'Sekretaris Desa', newNama: 'Muhammad Kamran', newJabatan: 'Sekretaris Desa' },
-    ]);
+// --- Form Update Aparat ---
+function AparatForm() {
+    const [aparatData, setAparatData] = useState([]);
     const [message, setMessage] = useState('');
     const [isSuccess, setIsSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const handleFieldChange = (id, field, value) => {
-        setUpdates(prev => prev.map(item => 
+    useEffect(() => {
+        const loadData = async () => {
+            const { data } = await supabase.from('organisasi').select('*').order('jabatan', { ascending: true });
+            setAparatData(data || []);
+        };
+        loadData();
+    }, []);
+
+    const handleChange = (id, field, value) => {
+        setAparatData(prev => prev.map(item =>
             item.id === id ? { ...item, [field]: value } : item
         ));
     };
@@ -336,58 +402,47 @@ function UpdateAparatForm() {
         setLoading(true);
         setMessage('');
 
-        // Map state structure to the expected input for handleUpdateAparat
-        const aparatUpdates = updates.map(u => ({
-            nama: u.nama, // Nama lama (identifier)
-            newNama: u.newNama,
-            newJabatan: u.newJabatan
+        const updates = aparatData.map(item => ({
+            nama: item.nama,
+            jabatan: item.jabatan,
+            newNama: item.nama,
+            newJabatan: item.jabatan
         }));
 
-        const result = await handleUpdateAparat(aparatUpdates);
+        const result = await handleUpdateAparat(updates);
 
         setIsSuccess(result.success);
         setMessage(result.message);
         setLoading(false);
 
         if (result.success) {
-            alert("Data Berhasil Diperbarui!");
-            // Optionally, reset newNama/newJabatan back to original values or clear them
+            alert("Data Aparat Berhasil Diperbarui!");
         }
     };
 
     return (
-        <div className="p-6 border rounded-lg shadow-md bg-white col-span-2 lg:col-span-1">
-            <h3 className="text-2xl font-semibold mb-4">4. Perbarui Aparat Desa (Tabel: organisasi)</h3>
+        <div className="bg-white p-6 rounded-lg shadow-md">
+            <h3 className="text-xl font-semibold mb-4 text-gray-800">Perangkat Desa</h3>
             <form onSubmit={handleSubmit} className="space-y-4">
-                {updates.map(item => (
-                    <div key={item.id} className="border p-3 rounded bg-gray-50">
-                        <p className="font-bold mb-2 text-blue-700">Record: {item.nama} ({item.jabatan})</p>
-                        <div>
-                            <label className="block text-sm text-gray-600">Nama Baru</label>
-                            <input 
-                                type="text"
-                                value={item.newNama} 
-                                onChange={(e) => handleFieldChange(item.id, 'newNama', e.target.value)}
-                                className="w-full mt-1 p-2 border rounded text-sm"
-                            />
-                        </div>
-                        <div className="mt-2">
-                            <label className="block text-sm text-gray-600">Jabatan Baru</label>
-                            <input 
-                                type="text"
-                                value={item.newJabatan} 
-                                onChange={(e) => handleFieldChange(item.id, 'newJabatan', e.target.value)}
-                                className="w-full mt-1 p-2 border rounded text-sm"
-                            />
+                {aparatData.map(item => (
+                    <div key={item.id} className="border p-4 rounded-md bg-gray-50">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">Nama</label>
+                                <input type="text" value={item.nama} onChange={(e) => handleChange(item.id, 'nama', e.target.value)}
+                                    className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">Jabatan</label>
+                                <input type="text" value={item.jabatan} onChange={(e) => handleChange(item.id, 'jabatan', e.target.value)}
+                                    className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required />
+                            </div>
                         </div>
                     </div>
                 ))}
-                <button 
-                    type="submit" 
-                    disabled={loading}
-                    className="w-full py-2 px-4 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 disabled:bg-red-400 transition duration-150"
-                >
-                    {loading ? 'Sedang Memproses...' : 'PERBARUI DATA (Aparat)'}
+                <button type="submit" disabled={loading}
+                    className="w-full py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md hover:bg-indigo-700 disabled:bg-indigo-400 transition duration-150">
+                    {loading ? 'Menyimpan...' : 'Simpan Perubahan'}
                 </button>
                 <Notification message={message} isSuccess={isSuccess} />
             </form>
@@ -395,22 +450,73 @@ function UpdateAparatForm() {
     );
 }
 
-
-// --- Komponen Utama Admin Panel ---
 export default function AdminControlPanel() {
+    const [activeTab, setActiveTab] = useState('profil');
+    const router = useRouter();
+
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
+        router.push('/login');
+    };
+
+    const tabs = [
+        { id: 'profil', label: 'Profil & Statistik', component: ProfileStatsForm },
+        { id: 'berita', label: 'Berita', component: NewsManagementForm },
+        { id: 'potensi', label: 'Potensi', component: PotensiForm },
+        { id: 'galeri', label: 'Galeri', component: GalleryManagementForm },
+        { id: 'aparat', label: 'Perangkat', component: AparatForm },
+    ];
+
+    const ActiveComponent = tabs.find(tab => tab.id === activeTab)?.component || ProfileStatsForm;
+
     return (
-        <div className="p-8 bg-gray-50 min-h-screen">
-            <h1 className="text-4xl font-bold mb-8 text-gray-800">Panel Kontrol Desa</h1>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <UpdateProfileForm />
-                <AddNewsForm />
-                <UpdatePotensiForm />
-                <UpdateAparatForm />
+        <div className="min-h-screen bg-gray-100">
+            {/* Fixed Header */}
+            <header className="bg-white shadow-md p-4 flex justify-between items-center">
+                <h1 className="text-2xl font-bold text-gray-800">Panel Admin Desa</h1>
+                <div className="flex space-x-4">
+                    <button
+                        onClick={() => router.push('/')}
+                        className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition duration-150"
+                    >
+                        Kembali ke Website
+                    </button>
+                    <button
+                        onClick={handleLogout}
+                        className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition duration-150"
+                    >
+                        Logout
+                    </button>
+                </div>
+            </header>
+
+            <div className="container mx-auto px-4 py-8">
+                {/* Tab Navigation */}
+                <div className="bg-white rounded-lg shadow-md mb-6">
+                    <div className="border-b border-gray-200">
+                        <nav className="flex space-x-8 px-6">
+                            {tabs.map(tab => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                                        activeTab === tab.id
+                                            ? 'border-blue-500 text-blue-600'
+                                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                    }`}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </nav>
+                    </div>
+                </div>
+
+                {/* Active Tab Content */}
+                <div className="max-w-4xl mx-auto">
+                    <ActiveComponent />
+                </div>
             </div>
-            
-            <p className="mt-10 text-center text-sm text-gray-500">
-                Pembaruan data akan memicu revalidasi instan pada halaman beranda berkat API revalidate dan Vercel.
-            </p>
         </div>
     );
 }
